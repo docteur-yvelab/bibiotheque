@@ -54,10 +54,12 @@ public class ReservationService {
         }
 
         // RG-02 : Un adhérent ne peut avoir qu'une seule réservation active sur un même livre
-        List<Reservation> reservationsActivesLivre = reservationRepository
+        List<Reservation> reservationsEnAttente = reservationRepository
                 .findByLivreIdAndStatut(request.getLivreId(), ReservationStatus.EN_ATTENTE);
-        reservationsActivesLivre.addAll(
-                reservationRepository.findByLivreIdAndStatut(request.getLivreId(), ReservationStatus.DISPONIBLE));
+        List<Reservation> reservationsDisponibles = reservationRepository
+                .findByLivreIdAndStatut(request.getLivreId(), ReservationStatus.DISPONIBLE);
+        List<Reservation> reservationsActivesLivre = new ArrayList<>(reservationsEnAttente);
+        reservationsActivesLivre.addAll(reservationsDisponibles);
 
         boolean dejaReserve = reservationsActivesLivre.stream()
                 .anyMatch(r -> r.getAdherentId().equals(request.getAdherentId()));
