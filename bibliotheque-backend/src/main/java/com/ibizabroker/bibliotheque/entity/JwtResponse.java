@@ -10,16 +10,18 @@ public class JwtResponse {
         this.jwtToken = jwtToken;
     }
 
+    // Getters
     public Users getUser() {
         return user;
     }
 
-    public void setUser(Users user) {
-        this.user = user;
-    }
-
     public String getJwtToken() {
         return jwtToken;
+    }
+
+    // Setters
+    public void setUser(Users user) {
+        this.user = user;
     }
 
     public void setJwtToken(String jwtToken) {

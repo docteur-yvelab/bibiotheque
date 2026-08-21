@@ -1,6 +1,7 @@
 package com.ibizabroker.bibliotheque.controller;
 
 import com.ibizabroker.bibliotheque.dao.UsersRepository;
+import com.ibizabroker.bibliotheque.entity.Role;
 import com.ibizabroker.bibliotheque.entity.Users;
 import com.ibizabroker.bibliotheque.exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +10,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @CrossOrigin("http://localhost:4200/")
 @RestController
@@ -23,14 +26,14 @@ public class AdminController {
     private PasswordEncoder passwordEncoder;
 
     @PostMapping("/users")
-//    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasRole('Admin')")
     public Users addUserByAdmin(@RequestBody Users user) {
-//        Role role = new Role();
-////        role.setRoleName(UserConstant.DEFAULT_ROLE);
-//        role.setRoleName(role.getRoleName());
-//        Set<Role> setRole = new HashSet<>();
-//        setRole.add(role);
-//        user.setRole(setRole);
+        Role role = new Role();
+        //role.setRoleName(UserConstant.DEFAULT_ROLE);
+        role.setRoleName(role.getRoleName());
+        Set<Role> setRole = new HashSet<>();
+        setRole.add(role);
+        user.setRole(setRole);
         String password = user.getPassword();
         String encryptPassword = passwordEncoder.encode(password);
         user.setPassword(encryptPassword);

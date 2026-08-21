@@ -1,13 +1,10 @@
 package com.ibizabroker.bibliotheque.entity;
 
-import lombok.Data;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-
-@Data
 @Entity
 public class Role {
 
@@ -15,4 +12,22 @@ public class Role {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer roleId;
     private String roleName;
+
+    // Getters
+    public Integer getRoleId() {
+        return roleId;
+    }
+
+    public String getRoleName() {
+        return roleName;
+    }
+
+    // Setters
+    public void setRoleId(Integer roleId) {
+        this.roleId = roleId;
+    }
+
+    public void setRoleName(String roleName) {
+        this.roleName = roleName;
+    }
 }

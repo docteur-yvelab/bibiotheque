@@ -6,6 +6,7 @@ import com.ibizabroker.bibliotheque.entity.JwtResponse;
 import com.ibizabroker.bibliotheque.entity.Users;
 import com.ibizabroker.bibliotheque.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
@@ -29,6 +30,7 @@ public class JwtService implements UserDetailsService {
     private UsersRepository userDao;
 
     @Autowired
+    @Lazy
     private AuthenticationManager authenticationManager;
 
     public JwtResponse createJwtToken(JwtRequest jwtRequest) throws Exception {
@@ -39,30 +41,31 @@ public class JwtService implements UserDetailsService {
         UserDetails userDetails = loadUserByUsername(username);
         String newGeneratedToken = jwtUtil.generateToken(userDetails);
 
-        Users user = userDao.findByUsername(username).get();
+        Users user = userDao.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Utilisateur non trouvé: " + username));
+
         return new JwtResponse(user, newGeneratedToken);
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Users user = userDao.findByUsername(username).get();
+        Users user = userDao.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Utilisateur non trouvé avec le nom : " + username));
 
-        if (user != null) {
-            return new org.springframework.security.core.userdetails.User(
-                    user.getUsername(),
-                    user.getPassword(),
-                    getAuthority(user)
-            );
-        } else {
-            throw new UsernameNotFoundException("User not found with username: " + username);
-        }
+        return new org.springframework.security.core.userdetails.User(
+                user.getUsername(),
+                user.getPassword(),
+                getAuthority(user)
+        );
     }
 
-    private Set getAuthority(Users user) {
+    private Set<SimpleGrantedAuthority> getAuthority(Users user) {
         Set<SimpleGrantedAuthority> authorities = new HashSet<>();
-        user.getRole().forEach(role -> {
-            authorities.add(new SimpleGrantedAuthority("ROLE_" + role.getRoleName()));
-        });
+        if (user.getRole() != null) {
+            user.getRole().forEach(role -> {
+                authorities.add(new SimpleGrantedAuthority("ROLE_" + role.getRoleName()));
+            });
+        }
         return authorities;
     }
 
