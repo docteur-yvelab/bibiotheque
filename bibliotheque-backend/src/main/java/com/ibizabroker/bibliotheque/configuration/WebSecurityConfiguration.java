@@ -41,7 +41,7 @@ public class WebSecurityConfiguration {
                 .cors(cors -> {})
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/authenticate", "/borrow/**", "/admin/books/", "/api/reservations/**").permitAll()
+                        .requestMatchers("/authenticate", "/borrow/**", "/admin/books/", "/api/reservations", "/api/reservations/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .anyRequest().authenticated()
