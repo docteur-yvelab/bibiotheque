@@ -1,6 +1,6 @@
 <!-- Filter -->
 <div class="filter-row mb-3">
-  <label class="form-label me-2 mb-0"><strong>Filter by status:</strong></label>
+  <label class="form-label me-2 mb-0 fw-bold">Filter by status:</label>
   <select class="form-select form-select-sm filter-select"
           [(ngModel)]="filterStatus"
           (ngModelChange)="applyFilter()">
@@ -13,10 +13,15 @@
   </select>
 </div>
 
+<!-- Empty filter result -->
+<div *ngIf="filteredReservations.length === 0 && reservations.length > 0" class="alert alert-warning">
+  No reservations match the selected filter. <strong>{{ filteredReservations.length }}</strong> results found.
+</div>
+
 <!-- Desktop: table -->
 <div class="reservation-table-wrapper">
   <div class="table-responsive">
-    <table class="table table-success table-striped mb-0">
+    <table class="table table-striped mb-0 reservation-table">
       <thead>
         <tr>
           <th>Book Title</th>
@@ -29,9 +34,17 @@
       </thead>
       <tbody>
         <tr *ngFor="let r of filteredReservations">
-          <td>{{ r.book?.bookName }}</td>
-          <td>{{ r.user?.name }}</td>
-          <td>{{ r.status }}</td>
+          <td>{{ getBookName(r) }}</td>
+          <td>{{ getUserName(r) }}</td>
+          <td>
+            <span class="badge" [ngClass]="{
+              'bg-warning text-dark': r.status === 'EN_ATTENTE',
+              'bg-success': r.status === 'DISPONIBLE',
+              'bg-danger': r.status === 'ANNULEE',
+              'bg-secondary': r.status === 'EXPIREE',
+              'bg-info text-dark': r.status === 'HONOREE'
+            }">{{ r.status }}</span>
+          </td>
           <td>{{ r.reservationDate }}</td>
           <td>{{ r.expirationDate }}</td>
           <td>
@@ -49,11 +62,20 @@
 
 <!-- Mobile: cards -->
 <div class="reservation-cards-wrapper">
-  <div class="card mb-3" *ngFor="let r of filteredReservations">
+  <div class="card mb-3 reservation-card" *ngFor="let r of filteredReservations">
     <div class="card-body">
-      <h6 class="card-title">{{ r.book?.bookName }}</h6>
-      <p class="card-text mb-1"><strong>Member:</strong> {{ r.user?.name }}</p>
-      <p class="card-text mb-1"><strong>Status:</strong> {{ r.status }}</p>
+      <h6 class="card-title reservation-card-title">{{ getBookName(r) }}</h6>
+      <p class="card-text mb-1"><strong>Member:</strong> {{ getUserName(r) }}</p>
+      <p class="card-text mb-1">
+        <strong>Status:</strong>
+        <span class="badge" [ngClass]="{
+          'bg-warning text-dark': r.status === 'EN_ATTENTE',
+          'bg-success': r.status === 'DISPONIBLE',
+          'bg-danger': r.status === 'ANNULEE',
+          'bg-secondary': r.status === 'EXPIREE',
+          'bg-info text-dark': r.status === 'HONOREE'
+        }">{{ r.status }}</span>
+      </p>
       <p class="card-text mb-1"><strong>Reserved:</strong> {{ r.reservationDate }}</p>
       <p class="card-text mb-2"><strong>Expires:</strong> {{ r.expirationDate }}</p>
       <button *ngIf="canCancel(r.status)"

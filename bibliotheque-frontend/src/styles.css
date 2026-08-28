@@ -1,6 +1,17 @@
 /* You can add global styles to this file, and also import other style files */
 @import "~bootstrap/dist/css/bootstrap.min.css";
 
+/* Dark background overrides for readability */
+body {
+  background-color: #1a1a1b;
+  color: #e0e0e0;
+}
+
+/* Ensure all text is visible on dark background */
+h1, h2, h3, h4, h5, h6 {
+  color: #ffffff;
+}
+
 /* Responsive table */
 .table-responsive {
   overflow-x: auto;
@@ -10,6 +21,24 @@
 /* Responsive card text */
 .card-text {
   font-size: 0.9rem;
+  color: #e0e0e0;
+}
+
+/* Form labels visible on dark background */
+.form-label {
+  color: #e0e0e0;
+}
+
+/* Select dropdown text visible */
+.form-select {
+  color: #e0e0e0;
+  background-color: #2a2a2b;
+  border-color: #444;
+}
+
+/* Alert text visible */
+.alert-info {
+  color: #0c5460;
 }
 
 /* Better mobile spacing */

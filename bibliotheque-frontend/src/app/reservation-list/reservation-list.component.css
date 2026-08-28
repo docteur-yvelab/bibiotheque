@@ -11,6 +11,36 @@
   min-width: 150px;
 }
 
+/* Table styling for dark background */
+.reservation-table {
+  color: #fff;
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.reservation-table thead {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.reservation-table th {
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.reservation-table td {
+  color: #e0e0e0;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.reservation-table-striped > tbody > tr:nth-of-type(odd) > * {
+  background-color: rgba(255, 255, 255, 0.02);
+  color: #e0e0e0;
+}
+
+.reservation-table-striped > tbody > tr:nth-of-type(even) > * {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: #e0e0e0;
+}
+
 /* Desktop: show table, hide cards */
 .reservation-table-wrapper {
   display: block;
@@ -18,6 +48,17 @@
 
 .reservation-cards-wrapper {
   display: none;
+}
+
+/* Card styling for dark background */
+.reservation-card {
+  background-color: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #e0e0e0;
+}
+
+.reservation-card-title {
+  color: #fff;
 }
 
 /* Mobile: show cards, hide table */

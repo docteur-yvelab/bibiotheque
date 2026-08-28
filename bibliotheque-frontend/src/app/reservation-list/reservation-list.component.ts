@@ -11,10 +11,8 @@ export class ReservationListComponent implements OnInit {
   @Input() reservations: Reservation[] = [];
   @Output() cancelled = new EventEmitter<number>();
 
-  filterStatus = '';
+  filterStatus = 'ALL';
   filteredReservations: Reservation[] = [];
-
-  statuses = ['ALL', 'EN_ATTENTE', 'DISPONIBLE', 'ANNULEE', 'EXPIREE', 'HONOREE'];
 
   ngOnInit(): void {
     this.applyFilter();
@@ -28,13 +26,18 @@ export class ReservationListComponent implements OnInit {
     if (!this.filterStatus || this.filterStatus === 'ALL') {
       this.filteredReservations = [...this.reservations];
     } else {
-      this.filteredReservations = this.reservations.filter(r => r.status === this.filterStatus);
+      this.filteredReservations = this.reservations.filter(
+        r => r.status === this.filterStatus
+      );
     }
   }
 
-  onFilterChange(status: string): void {
-    this.filterStatus = status;
-    this.applyFilter();
+  getBookName(r: Reservation): string {
+    return r.book?.bookName || r.book?.name || ('Book #' + r.livreId);
+  }
+
+  getUserName(r: Reservation): string {
+    return r.user?.name || r.user?.username || ('User #' + r.adherentId);
   }
 
   canCancel(status: string): boolean {
