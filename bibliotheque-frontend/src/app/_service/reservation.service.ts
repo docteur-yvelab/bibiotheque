@@ -24,4 +24,8 @@ export class ReservationService {
     return this.httpClient.patch(`${this.baseURL}/${reservationId}/annuler`, {});
   }
 
+  delete(reservationId: number): Observable<Object> {
+    return this.httpClient.delete(`${this.baseURL}/${reservationId}`);
+  }
+
 }

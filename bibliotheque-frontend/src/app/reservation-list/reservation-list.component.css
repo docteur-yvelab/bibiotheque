@@ -1,64 +1,152 @@
-/* Filter row layout */
+/* Filter row */
 .filter-row {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding: 14px 18px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
 }
 
 .filter-select {
   width: auto;
-  min-width: 150px;
+  min-width: 160px;
+  padding: 8px 14px;
+  border-radius: 8px;
 }
 
-/* Table styling for dark background */
+/* Table wrapper */
+.reservation-table-wrapper {
+  display: block;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border-color);
+}
+
 .reservation-table {
-  color: #fff;
-  background-color: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+  background: var(--bg-card);
+  margin-bottom: 0;
 }
 
 .reservation-table thead {
-  background-color: rgba(255, 255, 255, 0.1);
+  background: linear-gradient(135deg, rgba(68, 138, 255, 0.15) 0%, rgba(118, 75, 162, 0.1) 100%);
 }
 
 .reservation-table th {
-  color: #fff;
-  border-color: rgba(255, 255, 255, 0.15);
+  color: var(--accent-cyan);
+  border-bottom: 2px solid var(--border-color) !important;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  padding: 14px 14px;
 }
 
 .reservation-table td {
-  color: #e0e0e0;
-  border-color: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+  border-color: var(--border-color);
+  padding: 12px 14px;
+  vertical-align: middle;
+}
+
+.reservation-table tbody tr {
+  transition: background 0.15s ease;
+}
+
+.reservation-table tbody tr:hover {
+  background: rgba(68, 138, 255, 0.08) !important;
 }
 
 .reservation-table-striped > tbody > tr:nth-of-type(odd) > * {
   background-color: rgba(255, 255, 255, 0.02);
-  color: #e0e0e0;
 }
 
 .reservation-table-striped > tbody > tr:nth-of-type(even) > * {
   background-color: rgba(255, 255, 255, 0.05);
-  color: #e0e0e0;
 }
 
-/* Desktop: show table, hide cards */
-.reservation-table-wrapper {
-  display: block;
+/* Action cell */
+.action-cell {
+  white-space: nowrap;
 }
 
+/* Cards wrapper (hidden on desktop) */
 .reservation-cards-wrapper {
   display: none;
 }
 
-/* Card styling for dark background */
+/* ========== Mobile cards ========== */
 .reservation-card {
-  background-color: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  color: #e0e0e0;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  margin-bottom: 14px;
+}
+
+.reservation-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.reservation-card .card-body {
+  padding: 16px;
 }
 
 .reservation-card-title {
   color: #fff;
+  font-weight: 600;
+  font-size: 1rem;
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.reservation-card .card-text {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin-bottom: 6px;
+}
+
+.reservation-card .card-text strong {
+  color: var(--text-primary);
+}
+
+/* Badge colors */
+.badge.bg-warning {
+  background: linear-gradient(135deg, #ffab40, #ff9100) !important;
+  color: #1a1a1a !important;
+  font-weight: 700;
+}
+
+.badge.bg-success {
+  background: linear-gradient(135deg, #69f0ae, #00c853) !important;
+  color: #0a2e1a !important;
+  font-weight: 700;
+}
+
+.badge.bg-danger {
+  background: linear-gradient(135deg, #ff5252, #d50000) !important;
+  color: #fff !important;
+  font-weight: 700;
+}
+
+.badge.bg-secondary {
+  background: linear-gradient(135deg, #78909c, #546e7a) !important;
+  color: #fff !important;
+  font-weight: 700;
+}
+
+.badge.bg-info {
+  background: linear-gradient(135deg, #84ffff, #00e5ff) !important;
+  color: #0a2e3a !important;
+  font-weight: 700;
 }
 
 /* Mobile: show cards, hide table */
@@ -73,7 +161,7 @@
 
   .filter-row {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: stretch;
   }
 
   .filter-select {

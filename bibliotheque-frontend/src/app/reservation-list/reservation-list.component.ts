@@ -14,6 +14,7 @@ export class ReservationListComponent implements OnInit, OnChanges {
   @Input() books: Books[] = [];
   @Input() users: Users[] = [];
   @Output() cancelled = new EventEmitter<number>();
+  @Output() deleted = new EventEmitter<number>();
 
   filterStatus = 'ALL';
   filteredReservations: Reservation[] = [];
@@ -87,6 +88,16 @@ export class ReservationListComponent implements OnInit, OnChanges {
     if (confirm('Are you sure you want to cancel this reservation? This action cannot be undone.')) {
       this.cancelled.emit(reservationId);
     }
+  }
+
+  confirmDelete(reservationId: number): void {
+    if (confirm('Are you sure you want to permanently delete this reservation? This action cannot be undone.')) {
+      this.deleted.emit(reservationId);
+    }
+  }
+
+  canDelete(statut: string): boolean {
+    return statut === 'EN_ATTENTE' || statut === 'DISPONIBLE';
   }
 
 }

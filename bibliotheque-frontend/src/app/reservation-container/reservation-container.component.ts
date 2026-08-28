@@ -120,4 +120,27 @@ export class ReservationContainerComponent implements OnInit {
     );
   }
 
+  onReservationDeleted(reservationId: number): void {
+    this.successMessage = null;
+    this.reservationService.delete(reservationId).subscribe(
+      () => {
+        this.successMessage = 'Reservation deleted successfully.';
+        this.loadReservations();
+        setTimeout(() => this.successMessage = null, 4000);
+      },
+      (err) => {
+        if (err.status === 404) {
+          this.error = 'This reservation was not found on the server. It may have already been deleted.';
+        } else if (err.status === 409) {
+          this.error = err.error?.message || 'Cannot delete this reservation. It may be in a state that does not allow deletion.';
+        } else if (err.status === 0) {
+          this.error = 'Cannot reach the server. The backend may be stopped. Please verify the server is running and try again.';
+        } else {
+          this.error = 'An unexpected error occurred while deleting the reservation (HTTP ' + err.status + '). Please try again.';
+        }
+        setTimeout(() => this.error = null, 6000);
+      }
+    );
+  }
+
 }

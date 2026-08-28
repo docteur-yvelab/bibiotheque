@@ -1,3 +1,92 @@
+/* Navbar gradient background */
+:host ::ng-deep nav.navbar {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%) !important;
+  border-bottom: 1px solid rgba(68, 138, 255, 0.2);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  padding: 10px 0;
+}
+
+/* Brand */
+.navbar-brand {
+  font-weight: 700;
+  font-size: 1.15rem;
+  letter-spacing: -0.01em;
+  background: linear-gradient(135deg, #84ffff 0%, #448aff 50%, #b388ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  transition: opacity 0.2s;
+}
+
+.navbar-brand:hover {
+  opacity: 0.85;
+}
+
+/* Nav links */
+.nav-link {
+  color: rgba(255, 255, 255, 0.7) !important;
+  font-weight: 500;
+  padding: 8px 14px !important;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  margin: 2px 4px;
+}
+
+.nav-link:hover {
+  color: #fff !important;
+  background: rgba(68, 138, 255, 0.15);
+}
+
+.nav-link.active {
+  color: #fff !important;
+  background: rgba(68, 138, 255, 0.25);
+  box-shadow: 0 0 12px rgba(68, 138, 255, 0.2);
+}
+
+/* Toggler */
+.navbar-toggler {
+  border-color: rgba(255, 255, 255, 0.3);
+  padding: 6px 10px;
+}
+
+.navbar-toggler-icon {
+  filter: brightness(1.5);
+}
+
+/* Buttons in navbar */
+.btn-success {
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+  border: none;
+  font-weight: 600;
+  padding: 8px 20px;
+  border-radius: 8px;
+  color: #0a2e1a;
+}
+
+.btn-success:hover {
+  box-shadow: 0 0 20px rgba(105, 240, 174, 0.4);
+  transform: translateY(-1px);
+}
+
+.btn-danger {
+  background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+  border: none;
+  font-weight: 600;
+  padding: 8px 20px;
+  border-radius: 8px;
+}
+
+.btn-danger:hover {
+  box-shadow: 0 0 20px rgba(255, 82, 82, 0.4);
+  transform: translateY(-1px);
+}
+
+/* Hey name */
+.fw-bold {
+  color: var(--accent-cyan) !important;
+  font-weight: 600 !important;
+}
+
 /* Mobile: collapse menu hidden by default */
 @media (max-width: 991.98px) {
   .navbar-collapse:not(.show) {
@@ -6,6 +95,7 @@
 
   .navbar-collapse.show {
     display: block;
+    padding-top: 10px;
   }
 
   .navbar-nav {
@@ -13,11 +103,13 @@
   }
 
   .nav-link {
-    padding: 8px 0;
+    padding: 10px 0 !important;
+    margin: 2px 0;
   }
 
   .btn {
     width: 100%;
+    margin-top: 6px;
   }
 }
 

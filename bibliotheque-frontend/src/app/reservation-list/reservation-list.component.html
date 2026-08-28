@@ -53,7 +53,12 @@
                     (click)="confirmCancel(r.reservationId)">
               Annuler
             </button>
-            <span *ngIf="!canCancel(r.statut)" class="text-muted">—</span>
+            <button *ngIf="canDelete(r.statut)"
+                    class="btn btn-outline-danger btn-sm"
+                    (click)="confirmDelete(r.reservationId)">
+              Supprimer
+            </button>
+            <span *ngIf="!canCancel(r.statut) && !canDelete(r.statut)" class="text-muted">—</span>
           </td>
         </tr>
       </tbody>
@@ -85,7 +90,11 @@
                 (click)="confirmCancel(r.reservationId)">
           Annuler
         </button>
-
+        <button *ngIf="canDelete(r.statut)"
+                class="btn btn-outline-danger btn-sm"
+                (click)="confirmDelete(r.reservationId)">
+          Supprimer
+        </button>
       </div>
     </div>
   </div>

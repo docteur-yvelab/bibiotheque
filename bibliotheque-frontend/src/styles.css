@@ -1,47 +1,316 @@
 /* You can add global styles to this file, and also import other style files */
 @import "~bootstrap/dist/css/bootstrap.min.css";
 
-/* Dark background overrides for readability */
-body {
-  background-color: #1a1a1b;
-  color: #e0e0e0;
+/* ========== CSS Variables ========== */
+:root {
+  --bg-primary: #0f0f1a;
+  --bg-secondary: #1a1a2e;
+  --bg-card: #16213e;
+  --bg-card-hover: #1a2744;
+  --bg-input: #1e2a45;
+  --border-color: #2a3a5c;
+  --border-glow: #3a5a8c;
+  --text-primary: #e8eaf6;
+  --text-secondary: #9fa8da;
+  --text-muted: #7986cb;
+  --accent-blue: #448aff;
+  --accent-blue-dark: #2962ff;
+  --accent-green: #69f0ae;
+  --accent-green-dark: #00c853;
+  --accent-red: #ff5252;
+  --accent-red-dark: #d50000;
+  --accent-orange: #ffab40;
+  --accent-purple: #b388ff;
+  --accent-cyan: #84ffff;
+  --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --gradient-success: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+  --gradient-danger: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+  --gradient-info: linear-gradient(135deg, #2193b0 0%, #6dd5ed 100%);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
+  --shadow-glow-blue: 0 0 20px rgba(68, 138, 255, 0.3);
+  --shadow-glow-green: 0 0 20px rgba(105, 240, 174, 0.3);
 }
 
-/* Ensure all text is visible on dark background */
+/* ========== Base ========== */
+body {
+  background: var(--bg-primary);
+  background-image: 
+    radial-gradient(ellipse at 10% 20%, rgba(68, 138, 255, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 90% 80%, rgba(118, 75, 162, 0.08) 0%, transparent 50%);
+  color: var(--text-primary);
+  min-height: 100vh;
+}
+
+/* ========== Typography ========== */
 h1, h2, h3, h4, h5, h6 {
   color: #ffffff;
+  font-weight: 600;
+  letter-spacing: -0.01em;
 }
 
-/* Responsive table */
-.table-responsive {
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
+h2 {
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  padding-bottom: 8px;
 }
 
-/* Responsive card text */
-.card-text {
-  font-size: 0.9rem;
-  color: #e0e0e0;
+a {
+  color: var(--accent-blue);
+  transition: color 0.2s ease;
 }
 
-/* Form labels visible on dark background */
-.form-label {
-  color: #e0e0e0;
+a:hover {
+  color: var(--accent-cyan);
 }
 
-/* Select dropdown text visible */
+/* ========== Cards ========== */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  box-shadow: var(--shadow-md);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.card-header {
+  background: rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid var(--border-color);
+  border-radius: 12px 12px 0 0 !important;
+}
+
+.card-header h5 {
+  background: var(--gradient-success);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ========== Tables ========== */
+.table {
+  --bs-table-bg: transparent;
+  --bs-table-striped-bg: rgba(255, 255, 255, 0.03);
+  --bs-table-hover-bg: rgba(68, 138, 255, 0.1);
+  color: var(--text-primary);
+}
+
+.table > thead {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.table > thead th {
+  color: var(--accent-cyan);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  letter-spacing: 0.05em;
+  border-bottom: 2px solid var(--border-color) !important;
+  padding: 14px 12px;
+}
+
+.table > tbody td {
+  border-color: var(--border-color);
+  padding: 12px;
+  vertical-align: middle;
+}
+
+.table > tbody tr {
+  transition: background 0.15s ease;
+}
+
+.table > tbody tr:hover {
+  background: rgba(68, 138, 255, 0.08) !important;
+}
+
+.table-success {
+  --bs-table-bg: transparent;
+  --bs-table-striped-bg: rgba(105, 240, 174, 0.05);
+  --bs-table-hover-bg: rgba(105, 240, 174, 0.1);
+  color: var(--text-primary);
+}
+
+.table-success > thead {
+  background: rgba(105, 240, 174, 0.12);
+}
+
+.table-success > thead th {
+  color: var(--accent-green);
+  border-bottom-color: rgba(105, 240, 174, 0.3) !important;
+}
+
+.table-success > tbody td {
+  border-color: rgba(105, 240, 174, 0.15);
+}
+
+.table-success > tbody tr:hover {
+  background: rgba(105, 240, 174, 0.08) !important;
+}
+
+/* ========== Form Controls ========== */
+.form-control,
 .form-select {
-  color: #e0e0e0;
-  background-color: #2a2a2b;
-  border-color: #444;
+  background-color: var(--bg-input);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  border-radius: 8px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* Alert text visible */
+.form-control:focus,
+.form-select:focus {
+  background-color: var(--bg-input);
+  border-color: var(--accent-blue);
+  color: var(--text-primary);
+  box-shadow: 0 0 0 3px rgba(68, 138, 255, 0.2);
+}
+
+.form-control::placeholder {
+  color: var(--text-muted);
+}
+
+.form-label {
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.form-text {
+  color: var(--text-muted);
+}
+
+/* ========== Buttons ========== */
+.btn {
+  border-radius: 8px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.btn-success {
+  background: var(--gradient-success);
+  color: #0a2e1a;
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-success:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-glow-green);
+  filter: brightness(1.1);
+}
+
+.btn-danger {
+  background: var(--gradient-danger);
+  color: #fff;
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-danger:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0 20px rgba(255, 82, 82, 0.3);
+  filter: brightness(1.1);
+}
+
+.btn-primary {
+  background: var(--gradient-primary);
+  color: #fff;
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-glow-blue);
+  filter: brightness(1.1);
+}
+
+.btn-outline-danger {
+  border-color: var(--accent-red);
+  color: var(--accent-red);
+}
+
+.btn-outline-danger:hover {
+  background: var(--accent-red);
+  color: #fff;
+}
+
+.btn-sm {
+  padding: 6px 14px;
+  font-size: 0.85rem;
+}
+
+/* ========== Alerts ========== */
+.alert {
+  border-radius: 10px;
+  border: none;
+  font-weight: 500;
+  box-shadow: var(--shadow-sm);
+}
+
+.alert-success {
+  background: linear-gradient(135deg, rgba(105, 240, 174, 0.15) 0%, rgba(56, 239, 125, 0.1) 100%);
+  border-left: 4px solid var(--accent-green);
+  color: var(--accent-green);
+}
+
+.alert-danger {
+  background: linear-gradient(135deg, rgba(255, 82, 82, 0.15) 0%, rgba(213, 0, 0, 0.1) 100%);
+  border-left: 4px solid var(--accent-red);
+  color: var(--accent-red);
+}
+
 .alert-info {
-  color: #0c5460;
+  background: linear-gradient(135deg, rgba(68, 138, 255, 0.15) 0%, rgba(41, 98, 255, 0.1) 100%);
+  border-left: 4px solid var(--accent-blue);
+  color: var(--accent-blue);
 }
 
-/* Better mobile spacing */
+.alert-warning {
+  background: linear-gradient(135deg, rgba(255, 171, 64, 0.15) 0%, rgba(255, 152, 0, 0.1) 100%);
+  border-left: 4px solid var(--accent-orange);
+  color: var(--accent-orange);
+}
+
+/* ========== Badges ========== */
+.badge {
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  letter-spacing: 0.03em;
+}
+
+/* ========== Scrollbar ========== */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border-glow);
+}
+
+/* ========== Spinner ========== */
+.spinner-border {
+  color: var(--accent-blue) !important;
+}
+
+/* ========== Responsive ========== */
 @media (max-width: 575.98px) {
   .container-fluid {
     padding-left: 10px;
@@ -54,4 +323,10 @@ h1, h2, h3, h4, h5, h6 {
     padding: 0.4rem;
     font-size: 0.85rem;
   }
+}
+
+/* ========== Selection ========== */
+::selection {
+  background: rgba(68, 138, 255, 0.3);
+  color: #fff;
 }

@@ -1,0 +1,43 @@
+version: "3.8"
+
+services:
+  # ── PostgreSQL ─────────────────────────────────────────────────
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: bibliotheque
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d bibliotheque"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # ── Backend Spring Boot ────────────────────────────────────────
+  backend:
+    build: ./bibliotheque-backend
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/bibliotheque
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+    depends_on:
+      db:
+        condition: service_healthy
+
+  # ── Frontend Angular (nginx) ───────────────────────────────────
+  frontend:
+    build: ./bibliotheque-frontend
+    ports:
+      - "4200:4200"
+    depends_on:
+      - backend
+
+volumes:
+  pg-data:

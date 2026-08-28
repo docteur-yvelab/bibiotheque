@@ -1,0 +1,61 @@
+/* Form card */
+:host ::ng-deep .card {
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-card);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+}
+
+:host ::ng-deep .card-header {
+  background: linear-gradient(135deg, rgba(17, 153, 142, 0.12) 0%, rgba(56, 239, 125, 0.08) 100%);
+  border-bottom: 1px solid var(--border-color);
+  padding: 16px 20px;
+}
+
+:host ::ng-deep .card-body {
+  padding: 24px;
+}
+
+/* Form selects */
+:host ::ng-deep .form-select {
+  border-radius: 8px;
+  padding: 10px 14px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+:host ::ng-deep .form-select:focus {
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 0 3px rgba(68, 138, 255, 0.2);
+}
+
+/* Submit button */
+:host ::ng-deep .btn-success {
+  margin-top: 8px;
+  padding: 10px 28px;
+  font-size: 0.95rem;
+}
+
+:host ::ng-deep .btn-success:disabled {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-muted);
+  box-shadow: none;
+  transform: none;
+}
+
+/* Error alert inside form */
+:host ::ng-deep .alert {
+  margin-bottom: 20px;
+  border-radius: 10px;
+}
+
+/* Row spacing */
+:host ::ng-deep .row {
+  margin-bottom: 8px;
+}
+
+/* Label styling */
+:host ::ng-deep .form-label {
+  font-weight: 500;
+  margin-bottom: 6px;
+}

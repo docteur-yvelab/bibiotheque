@@ -49,13 +49,15 @@
       [reservations]="reservations"
       [books]="books"
       [users]="users"
-      (cancelled)="onReservationCancelled($event)">
+      (cancelled)="onReservationCancelled($event)"
+      (deleted)="onReservationDeleted($event)">
     </app-reservation-list>
 
     <!-- Form component -->
     <app-reservation-form
       [books]="books"
       [users]="users"
+      [reservations]="reservations"
       [errorMessage]="formError"
       (created)="onReservationCreated($event)">
     </app-reservation-form>

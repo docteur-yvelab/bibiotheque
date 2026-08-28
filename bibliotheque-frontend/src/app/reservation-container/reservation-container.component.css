@@ -1,21 +1,29 @@
-/* Responsive container padding */
+/* Container */
 .reservation-container {
-  padding-left: 15px;
-  padding-right: 15px;
+  padding: 20px 15px;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 @media (min-width: 768px) {
   .reservation-container {
-    padding-left: 30px;
-    padding-right: 30px;
+    padding: 30px 40px;
   }
 }
 
-/* Alert layout - flexbox without Bootstrap d-flex */
+/* Title */
+h2 {
+  margin-bottom: 24px;
+  font-size: 1.8rem;
+}
+
+/* Alert layout */
 .reservation-alert {
   display: flex;
   align-items: flex-start;
+  padding: 16px 20px;
   margin-top: 20px;
+  border-radius: 10px;
 }
 
 @media (min-width: 768px) {
@@ -32,12 +40,13 @@
 @media (min-width: 768px) {
   .alert-icon {
     margin-bottom: 0;
-    margin-right: 10px;
+    margin-right: 14px;
   }
 }
 
 .alert-text {
   flex-grow: 1;
+  font-size: 0.95rem;
 }
 
 .alert-btn {
@@ -52,7 +61,28 @@
   }
 }
 
-/* Mobile heading size */
+/* Success banner */
+.alert-success {
+  animation: slideDown 0.3s ease;
+}
+
+/* Error banner */
+.alert-danger {
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Mobile heading */
 @media (max-width: 575.98px) {
   h2 {
     font-size: 1.4rem;
