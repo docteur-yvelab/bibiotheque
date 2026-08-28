@@ -13,7 +13,7 @@ export class BooksService {
   constructor(private httpClient: HttpClient) { }
 
   getBooksList(): Observable<Books[]> {
-    return this.httpClient.get<Books[]>(`${this.baseURL}`);
+    return this.httpClient.get<Books[]>(`${this.baseURL}` );
   }
 
   createBook(book: Books): Observable<Object> {
