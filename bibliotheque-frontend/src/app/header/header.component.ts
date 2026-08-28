@@ -10,14 +10,27 @@ import { UsersService } from '../_service/users.service';
 })
 export class HeaderComponent implements OnInit {
 
+  isMenuOpen = false;
+
   constructor(
     private userAuthService: UserAuthService, 
     private router: Router,
     public userService: UsersService,
   ) { }
 
-  name = this.userAuthService.getName();
   ngOnInit(): void {
+  }
+
+  get name(): string {
+    return this.userAuthService.getName() || '';
+  }
+
+  toggleMenu(): void {
+    this.isMenuOpen = !this.isMenuOpen;
+  }
+
+  closeMenu(): void {
+    this.isMenuOpen = false;
   }
 
   public isLoggedIn() {

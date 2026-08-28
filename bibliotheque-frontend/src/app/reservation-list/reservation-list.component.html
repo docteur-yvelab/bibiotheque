@@ -5,17 +5,17 @@
           [(ngModel)]="filterStatus"
           (ngModelChange)="applyFilter()">
     <option value="ALL">All</option>
-    <option value="EN_ATTENTE">EN_ATTENTE</option>
-    <option value="DISPONIBLE">DISPONIBLE</option>
-    <option value="ANNULEE">ANNULEE</option>
-    <option value="EXPIREE">EXPIREE</option>
-    <option value="HONOREE">HONOREE</option>
+    <option value="EN_ATTENTE">En attente</option>
+    <option value="DISPONIBLE">Disponible</option>
+    <option value="ANNULEE">Annulée</option>
+    <option value="EXPIREE">Expirée</option>
+    <option value="HONOREE">Honorée</option>
   </select>
 </div>
 
 <!-- Empty filter result -->
 <div *ngIf="filteredReservations.length === 0 && reservations.length > 0" class="alert alert-warning">
-  No reservations match the selected filter. <strong>{{ filteredReservations.length }}</strong> results found.
+  No reservations match the selected filter.
 </div>
 
 <!-- Desktop: table -->
@@ -38,21 +38,27 @@
           <td>{{ getUserName(r) }}</td>
           <td>
             <span class="badge" [ngClass]="{
-              'bg-warning text-dark': r.status === 'EN_ATTENTE',
-              'bg-success': r.status === 'DISPONIBLE',
-              'bg-danger': r.status === 'ANNULEE',
-              'bg-secondary': r.status === 'EXPIREE',
-              'bg-info text-dark': r.status === 'HONOREE'
-            }">{{ r.status }}</span>
+              'bg-warning text-dark': r.statut === 'EN_ATTENTE',
+              'bg-success': r.statut === 'DISPONIBLE',
+              'bg-danger': r.statut === 'ANNULEE',
+              'bg-secondary': r.statut === 'EXPIREE',
+              'bg-info text-dark': r.statut === 'HONOREE'
+            }">{{ getStatusLabel(r.statut) }}</span>
           </td>
-          <td>{{ r.reservationDate }}</td>
-          <td>{{ r.expirationDate }}</td>
-          <td>
-            <button *ngIf="canCancel(r.status)"
-                    class="btn btn-danger btn-sm"
+          <td>{{ formatDate(r.dateReservation) }}</td>
+          <td>{{ formatDate(r.dateExpiration) }}</td>
+          <td class="action-cell">
+            <button *ngIf="canCancel(r.statut)"
+                    class="btn btn-danger btn-sm me-1"
                     (click)="confirmCancel(r.reservationId)">
-              Cancel
+              Annuler
             </button>
+            <button *ngIf="canHonorer(r.statut)"
+                    class="btn btn-success btn-sm"
+                    (click)="confirmHonorer(r.reservationId)">
+              Honorer
+            </button>
+            <span *ngIf="!canCancel(r.statut) && !canHonorer(r.statut)" class="text-muted">—</span>
           </td>
         </tr>
       </tbody>
@@ -69,20 +75,27 @@
       <p class="card-text mb-1">
         <strong>Status:</strong>
         <span class="badge" [ngClass]="{
-          'bg-warning text-dark': r.status === 'EN_ATTENTE',
-          'bg-success': r.status === 'DISPONIBLE',
-          'bg-danger': r.status === 'ANNULEE',
-          'bg-secondary': r.status === 'EXPIREE',
-          'bg-info text-dark': r.status === 'HONOREE'
-        }">{{ r.status }}</span>
+          'bg-warning text-dark': r.statut === 'EN_ATTENTE',
+          'bg-success': r.statut === 'DISPONIBLE',
+          'bg-danger': r.statut === 'ANNULEE',
+          'bg-secondary': r.statut === 'EXPIREE',
+          'bg-info text-dark': r.statut === 'HONOREE'
+        }">{{ getStatusLabel(r.statut) }}</span>
       </p>
-      <p class="card-text mb-1"><strong>Reserved:</strong> {{ r.reservationDate }}</p>
-      <p class="card-text mb-2"><strong>Expires:</strong> {{ r.expirationDate }}</p>
-      <button *ngIf="canCancel(r.status)"
-              class="btn btn-danger btn-sm"
-              (click)="confirmCancel(r.reservationId)">
-        Cancel
-      </button>
+      <p class="card-text mb-1"><strong>Reserved:</strong> {{ formatDate(r.dateReservation) }}</p>
+      <p class="card-text mb-2"><strong>Expires:</strong> {{ formatDate(r.dateExpiration) }}</p>
+      <div class="d-flex gap-2">
+        <button *ngIf="canCancel(r.statut)"
+                class="btn btn-danger btn-sm"
+                (click)="confirmCancel(r.reservationId)">
+          Annuler
+        </button>
+        <button *ngIf="canHonorer(r.statut)"
+                class="btn btn-success btn-sm"
+                (click)="confirmHonorer(r.reservationId)">
+          Honorer
+        </button>
+      </div>
     </div>
   </div>
 </div>

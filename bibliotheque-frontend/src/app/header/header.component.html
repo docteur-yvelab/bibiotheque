@@ -3,48 +3,54 @@
     <div class="container-fluid">
       <a class="navbar-brand" routerLink="/">Library Management System</a>
       <button class="navbar-toggler" type="button"
-              data-bs-toggle="collapse"
-              data-bs-target="#navbarSupportedContent"
+              (click)="toggleMenu()"
+              [attr.aria-expanded]="isMenuOpen"
               aria-controls="navbarSupportedContent"
-              aria-expanded="false"
               aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <div class="navbar-collapse" [class.show]="isMenuOpen" id="navbarSupportedContent">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
 
           <li class="nav-item">
             <a routerLink="/books" routerLinkActive="active" class="nav-link"
+               (click)="closeMenu()"
                *ngIf="userService.roleMatch(['Admin'])">Book List</a>
           </li>
 
           <li class="nav-item">
             <a routerLink="/create-book" routerLinkActive="active" class="nav-link"
+               (click)="closeMenu()"
                *ngIf="userService.roleMatch(['Admin'])">Add Book</a>
           </li>
 
           <li class="nav-item">
             <a routerLink="/users" routerLinkActive="active" class="nav-link"
+               (click)="closeMenu()"
                *ngIf="userService.roleMatch(['Admin'])">User List</a>
           </li>
 
           <li class="nav-item">
             <a routerLink="/register-user" routerLinkActive="active" class="nav-link"
+               (click)="closeMenu()"
                *ngIf="userService.roleMatch(['Admin'])">Register User</a>
           </li>
 
           <li class="nav-item">
             <a routerLink="/reservations" routerLinkActive="active" class="nav-link"
+               (click)="closeMenu()"
                *ngIf="userService.roleMatch(['Admin'])">Reservations</a>
           </li>
 
           <li class="nav-item">
             <a routerLink="/borrow-book" routerLinkActive="active" class="nav-link"
+               (click)="closeMenu()"
                *ngIf="userService.roleMatch(['User'])">Borrow Books</a>
           </li>
 
           <li class="nav-item">
             <a routerLink="/return-book" routerLinkActive="active" class="nav-link"
+               (click)="closeMenu()"
                *ngIf="userService.roleMatch(['User'])">Return Books</a>
           </li>
 
@@ -55,7 +61,7 @@
         </ul>
 
         <div class="d-flex flex-column flex-lg-row align-items-start align-items-lg-center gap-2">
-          <button *ngIf="!isLoggedIn()" type="button" class="btn btn-success" routerLink="/login">Login</button>
+          <button *ngIf="!isLoggedIn()" type="button" class="btn btn-success" routerLink="/login" (click)="closeMenu()">Login</button>
           <button *ngIf="isLoggedIn()" type="button" class="btn btn-danger" (click)="logout()">Logout</button>
         </div>
       </div>

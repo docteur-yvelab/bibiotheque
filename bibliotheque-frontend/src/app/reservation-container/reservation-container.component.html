@@ -47,7 +47,10 @@
     <app-reservation-list
       *ngIf="reservations.length > 0"
       [reservations]="reservations"
-      (cancelled)="onReservationCancelled($event)">
+      [books]="books"
+      [users]="users"
+      (cancelled)="onReservationCancelled($event)"
+      (honorer)="onHonorer($event)">
     </app-reservation-list>
 
     <!-- Form component -->

@@ -119,4 +119,27 @@ export class ReservationContainerComponent implements OnInit {
       }
     );
   }
+
+  onHonorer(reservationId: number): void {
+    this.successMessage = null;
+    this.reservationService.honorer(reservationId).subscribe(
+      () => {
+        this.successMessage = 'Réservation honorée avec succès.';
+        this.loadReservations();
+        setTimeout(() => this.successMessage = null, 4000);
+      },
+      (err) => {
+        if (err.status === 409) {
+          this.error = err.error?.message || 'Impossible d\'honorer cette réservation. Elle a peut-être déjà été traitée, expirée, ou est dans un état incompatible.';
+        } else if (err.status === 404) {
+          this.error = 'Cette réservation n\'a pas été trouvée sur le serveur.';
+        } else if (err.status === 0) {
+          this.error = 'Impossible de joindre le serveur. Vérifiez que le backend est en cours d\'exécution.';
+        } else {
+          this.error = 'Une erreur inattendue est survenue (HTTP ' + err.status + '). Veuillez réessayer.';
+        }
+        setTimeout(() => this.error = null, 6000);
+      }
+    );
+  }
 }

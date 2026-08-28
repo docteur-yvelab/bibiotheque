@@ -12,7 +12,9 @@ import { UserAuthService } from '../_service/user-auth.service';
 })
 export class BorrowBookComponent implements OnInit {
 
-  books: Books[];
+  books: Books[] = [];
+  successMessage: string | null = null;
+  errorMessage: string | null = null;
 
   constructor(
     private booksService: BooksService,
@@ -27,7 +29,7 @@ export class BorrowBookComponent implements OnInit {
   }
 
   private getBooks() {
-    this.booksService.getBooksList().subscribe(data =>{
+    this.booksService.getBooksList().subscribe(data => {
       this.books = data;
     });
   }
@@ -35,12 +37,23 @@ export class BorrowBookComponent implements OnInit {
   borrow: Borrow = new Borrow();
 
   borrowBook(bookId: number) {
+    this.successMessage = null;
+    this.errorMessage = null;
     this.borrow.bookId = bookId;
     this.borrow.userId = this.userId;
-    console.log(this.borrow);
     this.borrowService.borrowBook(this.borrow).subscribe(data => {
-      console.log(data);
-    },
-    error => console.log(error));
+      this.successMessage = 'Book borrowed successfully!';
+      this.getBooks();
+      setTimeout(() => this.successMessage = null, 4000);
+    }, error => {
+      if (error.status === 409) {
+        this.errorMessage = error.error?.message || 'Cannot borrow this book. It may already be borrowed or no copies are available.';
+      } else if (error.status === 0) {
+        this.errorMessage = 'Cannot reach the server. Please verify the backend is running.';
+      } else {
+        this.errorMessage = 'An unexpected error occurred (HTTP ' + error.status + ').';
+      }
+      setTimeout(() => this.errorMessage = null, 6000);
+    });
   }
 }

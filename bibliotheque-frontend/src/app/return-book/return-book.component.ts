@@ -13,8 +13,10 @@ import { UserAuthService } from '../_service/user-auth.service';
 })
 export class ReturnBookComponent implements OnInit {
 
-  books: Books[];
-  borrow: Borrow[];
+  books: Books[] = [];
+  borrow: Borrow[] = [];
+  successMessage: string | null = null;
+  errorMessage: string | null = null;
 
   constructor(
     private borrowService: BorrowService,
@@ -30,25 +32,42 @@ export class ReturnBookComponent implements OnInit {
   }
 
   private getBooks() {
-    this.booksService.getBooksList().subscribe(data =>{
+    this.booksService.getBooksList().subscribe(data => {
       this.books = data;
     });
   }
 
-  
   private getBooksByUser() {
     this.borrowService.getBooksBorrowedByUser(this.userId).subscribe(data => {
       this.borrow = data;
-    })
+    }, error => {
+      if (error.status === 0) {
+        this.errorMessage = 'Cannot reach the server. Please verify the backend is running.';
+      } else if (error.status === 404) {
+        this.errorMessage = 'No borrowed books found for your account.';
+      } else {
+        this.errorMessage = 'An error occurred while loading your borrowed books (HTTP ' + error.status + ').';
+      }
+    });
   }
 
   brw: Borrow = new Borrow();
   public returnBook(borrowId: number) {
+    this.successMessage = null;
+    this.errorMessage = null;
     this.brw.borrowId = borrowId;
     this.borrowService.returnBook(this.brw).subscribe(data => {
-      console.log(data);
-    },
-    error => console.log(error));
+      this.successMessage = 'Book returned successfully!';
+      this.getBooksByUser();
+      setTimeout(() => this.successMessage = null, 4000);
+    }, error => {
+      if (error.status === 0) {
+        this.errorMessage = 'Cannot reach the server. Please verify the backend is running.';
+      } else {
+        this.errorMessage = 'An error occurred while returning the book (HTTP ' + error.status + ').';
+      }
+      setTimeout(() => this.errorMessage = null, 6000);
+    });
   }
 
 }

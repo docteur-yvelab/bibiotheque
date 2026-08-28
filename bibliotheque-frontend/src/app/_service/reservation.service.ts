@@ -23,4 +23,8 @@ export class ReservationService {
   annuler(reservationId: number): Observable<Object> {
     return this.httpClient.patch(`${this.baseURL}/${reservationId}/annuler`, {});
   }
+
+  honorer(reservationId: number): Observable<Object> {
+    return this.httpClient.patch(`${this.baseURL}/${reservationId}/honorer`, {});
+  }
 }
