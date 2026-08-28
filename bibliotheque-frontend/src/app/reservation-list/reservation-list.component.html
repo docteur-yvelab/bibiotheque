@@ -53,12 +53,7 @@
                     (click)="confirmCancel(r.reservationId)">
               Annuler
             </button>
-            <button *ngIf="canHonorer(r.statut)"
-                    class="btn btn-success btn-sm"
-                    (click)="confirmHonorer(r.reservationId)">
-              Honorer
-            </button>
-            <span *ngIf="!canCancel(r.statut) && !canHonorer(r.statut)" class="text-muted">—</span>
+            <span *ngIf="!canCancel(r.statut)" class="text-muted">—</span>
           </td>
         </tr>
       </tbody>
@@ -90,11 +85,7 @@
                 (click)="confirmCancel(r.reservationId)">
           Annuler
         </button>
-        <button *ngIf="canHonorer(r.statut)"
-                class="btn btn-success btn-sm"
-                (click)="confirmHonorer(r.reservationId)">
-          Honorer
-        </button>
+
       </div>
     </div>
   </div>

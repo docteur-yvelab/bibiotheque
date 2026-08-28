@@ -14,7 +14,6 @@ export class ReservationListComponent implements OnInit, OnChanges {
   @Input() books: Books[] = [];
   @Input() users: Users[] = [];
   @Output() cancelled = new EventEmitter<number>();
-  @Output() honorer = new EventEmitter<number>();
 
   filterStatus = 'ALL';
   filteredReservations: Reservation[] = [];
@@ -84,19 +83,10 @@ export class ReservationListComponent implements OnInit, OnChanges {
     return statut === 'EN_ATTENTE' || statut === 'DISPONIBLE';
   }
 
-  canHonorer(statut: string): boolean {
-    return statut === 'EN_ATTENTE' || statut === 'DISPONIBLE';
-  }
-
   confirmCancel(reservationId: number): void {
     if (confirm('Are you sure you want to cancel this reservation? This action cannot be undone.')) {
       this.cancelled.emit(reservationId);
     }
   }
 
-  confirmHonorer(reservationId: number): void {
-    if (confirm('Honor this reservation? The book will be marked as borrowed.')) {
-      this.honorer.emit(reservationId);
-    }
-  }
 }

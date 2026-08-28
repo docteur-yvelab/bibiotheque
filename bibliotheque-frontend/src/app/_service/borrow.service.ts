@@ -16,8 +16,8 @@ export class BorrowService {
     return this.httpClient.get<Borrow[]>(`${this.baseURL}`);
   }
 
-  borrowBook(borrow: Borrow): Observable<Object> {
-    return this.httpClient.post(`${this.baseURL}`, borrow);
+  borrowBook(borrow: Borrow): Observable<string> {
+    return this.httpClient.post(`${this.baseURL}`, borrow, { responseType: 'text' });
   }
 
   returnBook(borrow: Borrow): Observable<Object> {
