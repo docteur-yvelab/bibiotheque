@@ -12,11 +12,6 @@
   font-size: 0.9rem;
 }
 
-/* Responsive alerts */
-.alert svg {
-  flex-shrink: 0;
-}
-
 /* Better mobile spacing */
 @media (max-width: 575.98px) {
   .container-fluid {

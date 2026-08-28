@@ -1,23 +1,20 @@
 <!-- Filter -->
-<div class="row mb-3 align-items-center">
-  <div class="col-12 col-sm-auto mb-2 mb-sm-0">
-    <label class="form-label mb-0"><strong>Filter by status:</strong></label>
-  </div>
-  <div class="col-12 col-sm-auto">
-    <select class="form-select form-select-sm"
-            (change)="onFilterChange($any($event.target).value)">
-      <option value="ALL">All</option>
-      <option value="EN_ATTENTE">EN_ATTENTE</option>
-      <option value="DISPONIBLE">DISPONIBLE</option>
-      <option value="ANNULEE">ANNULEE</option>
-      <option value="EXPIREE">EXPIREE</option>
-      <option value="HONOREE">HONOREE</option>
-    </select>
-  </div>
+<div class="filter-row mb-3">
+  <label class="form-label me-2 mb-0"><strong>Filter by status:</strong></label>
+  <select class="form-select form-select-sm filter-select"
+          [(ngModel)]="filterStatus"
+          (ngModelChange)="applyFilter()">
+    <option value="ALL">All</option>
+    <option value="EN_ATTENTE">EN_ATTENTE</option>
+    <option value="DISPONIBLE">DISPONIBLE</option>
+    <option value="ANNULEE">ANNULEE</option>
+    <option value="EXPIREE">EXPIREE</option>
+    <option value="HONOREE">HONOREE</option>
+  </select>
 </div>
 
 <!-- Desktop: table -->
-<div class="d-none d-md-block">
+<div class="reservation-table-wrapper">
   <div class="table-responsive">
     <table class="table table-success table-striped mb-0">
       <thead>
@@ -51,7 +48,7 @@
 </div>
 
 <!-- Mobile: cards -->
-<div class="d-md-none">
+<div class="reservation-cards-wrapper">
   <div class="card mb-3" *ngFor="let r of filteredReservations">
     <div class="card-body">
       <h6 class="card-title">{{ r.book?.bookName }}</h6>

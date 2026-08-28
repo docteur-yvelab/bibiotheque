@@ -1,0 +1,60 @@
+/* Responsive container padding */
+.reservation-container {
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+@media (min-width: 768px) {
+  .reservation-container {
+    padding-left: 30px;
+    padding-right: 30px;
+  }
+}
+
+/* Alert layout - flexbox without Bootstrap d-flex */
+.reservation-alert {
+  display: flex;
+  align-items: flex-start;
+  margin-top: 20px;
+}
+
+@media (min-width: 768px) {
+  .reservation-alert {
+    align-items: center;
+  }
+}
+
+.alert-icon {
+  flex-shrink: 0;
+  margin-bottom: 10px;
+}
+
+@media (min-width: 768px) {
+  .alert-icon {
+    margin-bottom: 0;
+    margin-right: 10px;
+  }
+}
+
+.alert-text {
+  flex-grow: 1;
+}
+
+.alert-btn {
+  margin-top: 10px;
+}
+
+@media (min-width: 768px) {
+  .alert-btn {
+    margin-top: 0;
+    margin-left: 15px;
+    flex-shrink: 0;
+  }
+}
+
+/* Mobile heading size */
+@media (max-width: 575.98px) {
+  h2 {
+    font-size: 1.4rem;
+  }
+}
