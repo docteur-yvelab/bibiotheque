@@ -1,41 +1,69 @@
-<div class="mb-3">
-  <label class="form-label"><strong>Filter by status:</strong></label>
-  <select class="form-select" style="width: auto; display: inline-block; margin-left: 10px;"
-          (change)="onFilterChange($any($event.target).value)">
-    <option value="ALL">All</option>
-    <option value="EN_ATTENTE">EN_ATTENTE</option>
-    <option value="DISPONIBLE">DISPONIBLE</option>
-    <option value="ANNULEE">ANNULEE</option>
-    <option value="EXPIREE">EXPIREE</option>
-    <option value="HONOREE">HONOREE</option>
-  </select>
+<!-- Filter -->
+<div class="row mb-3 align-items-center">
+  <div class="col-12 col-sm-auto mb-2 mb-sm-0">
+    <label class="form-label mb-0"><strong>Filter by status:</strong></label>
+  </div>
+  <div class="col-12 col-sm-auto">
+    <select class="form-select form-select-sm"
+            (change)="onFilterChange($any($event.target).value)">
+      <option value="ALL">All</option>
+      <option value="EN_ATTENTE">EN_ATTENTE</option>
+      <option value="DISPONIBLE">DISPONIBLE</option>
+      <option value="ANNULEE">ANNULEE</option>
+      <option value="EXPIREE">EXPIREE</option>
+      <option value="HONOREE">HONOREE</option>
+    </select>
+  </div>
 </div>
 
-<table class="table table-success table-striped">
-  <thead>
-    <tr>
-      <th>Book Title</th>
-      <th>Member</th>
-      <th>Status</th>
-      <th>Reservation Date</th>
-      <th>Expiration Date</th>
-      <th>Action</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let r of filteredReservations">
-      <td>{{ r.book?.bookName }}</td>
-      <td>{{ r.user?.name }}</td>
-      <td>{{ r.status }}</td>
-      <td>{{ r.reservationDate }}</td>
-      <td>{{ r.expirationDate }}</td>
-      <td>
-        <button *ngIf="canCancel(r.status)"
-                class="btn btn-danger btn-sm"
-                (click)="confirmCancel(r.reservationId)">
-          Cancel
-        </button>
-      </td>
-    </tr>
-  </tbody>
-</table>
+<!-- Desktop: table -->
+<div class="d-none d-md-block">
+  <div class="table-responsive">
+    <table class="table table-success table-striped mb-0">
+      <thead>
+        <tr>
+          <th>Book Title</th>
+          <th>Member</th>
+          <th>Status</th>
+          <th>Reservation Date</th>
+          <th>Expiration Date</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let r of filteredReservations">
+          <td>{{ r.book?.bookName }}</td>
+          <td>{{ r.user?.name }}</td>
+          <td>{{ r.status }}</td>
+          <td>{{ r.reservationDate }}</td>
+          <td>{{ r.expirationDate }}</td>
+          <td>
+            <button *ngIf="canCancel(r.status)"
+                    class="btn btn-danger btn-sm"
+                    (click)="confirmCancel(r.reservationId)">
+              Cancel
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Mobile: cards -->
+<div class="d-md-none">
+  <div class="card mb-3" *ngFor="let r of filteredReservations">
+    <div class="card-body">
+      <h6 class="card-title">{{ r.book?.bookName }}</h6>
+      <p class="card-text mb-1"><strong>Member:</strong> {{ r.user?.name }}</p>
+      <p class="card-text mb-1"><strong>Status:</strong> {{ r.status }}</p>
+      <p class="card-text mb-1"><strong>Reserved:</strong> {{ r.reservationDate }}</p>
+      <p class="card-text mb-2"><strong>Expires:</strong> {{ r.expirationDate }}</p>
+      <button *ngIf="canCancel(r.status)"
+              class="btn btn-danger btn-sm"
+              (click)="confirmCancel(r.reservationId)">
+        Cancel
+      </button>
+    </div>
+  </div>
+</div>

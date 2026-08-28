@@ -8,40 +8,71 @@
 
 ## 1. Résumé
 
-Implémentation d'un écran de gestion des réservations dans l'application Angular existante (Library Management System). L'écran comprend une liste filtrable, un formulaire de création, et une action d'annulation, avec une gestion complète des 4 états (chargement, données, liste vide, erreur) et des erreurs métier.
+Implémentation d'un écran de gestion des réservations dans l'application Angular existante (Library Management System). L'écran comprend une liste filtrable, un formulaire de création, et une action d'annulation, avec une gestion complète des 4 états (chargement, données, liste vide, erreur) et des erreurs métier. L'interface est entièrement responsive (desktop + mobile).
 
 ---
 
-## 2. Fichiers créés (8 fichiers)
+## 2. Fichiers créés (11 fichiers)
 
 | Fichier | Description |
 |---|---|
-| `src/app/_model/reservation.ts` | Modèle `Reservation` (reservationId, book, user, status, reservationDate, expirationDate) |
+| `src/app/_model/reservation.ts` | Modèle `Reservation` (reservationId, livreId, adherentId, book, user, status, reservationDate, expirationDate) |
 | `src/app/_service/reservation.service.ts` | Service API dédié — `getAll()`, `create()`, `annuler()` — aucun appel API dans les composants |
 | `src/app/reservation-container/reservation-container.component.ts` | Composant conteneur — gère l'état global (loading, data, empty, error) et orchestre les appels API |
-| `src/app/reservation-container/reservation-container.component.html` | Template du conteneur — 4 états avec messages clairs et icônes Bootstrap |
+| `src/app/reservation-container/reservation-container.component.html` | Template du conteneur — 4 états avec messages clairs, icônes Bootstrap, layout responsive |
 | `src/app/reservation-container/reservation-container.component.css` | Styles du conteneur (vide) |
 | `src/app/reservation-list/reservation-list.component.ts` | Composant liste — filtre par statut, bouton annuler conditionné, confirmation avant annulation |
-| `src/app/reservation-list/reservation-list.component.html` | Template de la liste — tableau Bootstrap avec 6 colonnes |
+| `src/app/reservation-list/reservation-list.component.html` | Template de la liste — tableau responsive (desktop) + cards (mobile) |
 | `src/app/reservation-list/reservation-list.component.css` | Styles de la liste (vide) |
 | `src/app/reservation-form/reservation-form.component.ts` | Composant formulaire — dropdowns alimentés par l'API, validation côté client |
-| `src/app/reservation-form/reservation-form.component.html` | Template du formulaire — 2 selects + bouton désactivé |
+| `src/app/reservation-form/reservation-form.component.html` | Template du formulaire — 2 selects responsive (col-12 col-md-6) + bouton désactivé |
 | `src/app/reservation-form/reservation-form.component.css` | Styles du formulaire (vide) |
 
 ---
 
-## 3. Fichiers modifiés (4 fichiers)
+## 3. Fichiers modifiés (5 fichiers)
 
 | Fichier | Modification |
 |---|---|
-| `src/app/_auth/auth.interceptor.ts` | Retiré le `catchError` qui masquait les erreurs (`"Some thing is wrong"`) → les erreurs remontent maintenant intactes aux services. Les redirections 401→login et 403→forbidden sont conservées. |
+| `src/app/_auth/auth.interceptor.ts` | Retiré le `catchError` qui masquait les erreurs (`"Some thing is wrong"`) → les erreurs remontent maintenant intactes aux services. Utilisation de `throwError(() => err)` au lieu de `throwError(err)`. |
 | `src/app/app-routing.module.ts` | Ajouté la route `{path: 'reservations', component: ReservationContainerComponent, canActivate: [AuthGuard], data: {roles: ['Admin']}}` |
 | `src/app/header/header.component.html` | Ajouté le lien de navigation "Reservations" visible uniquement pour le rôle Admin |
 | `src/app/app.module.ts` | Déclaré les 3 nouveaux composants (`ReservationContainerComponent`, `ReservationListComponent`, `ReservationFormComponent`) |
+| `src/styles.css` | Ajouté des styles responsive (table overflow, card text, alert icons, mobile spacing) |
 
 ---
 
-## 4. Architecture respectée
+## 4. Corrections appliquées
+
+### 4.1 Payload de création corrigé
+
+**Problème :** Le backend attend des champs plats `livreId` et `adherentId`, mais le formulaire envoyait des objets imbriqués `book: { bookId }` et `user: { userId }`.
+
+**Erreur affichée :** `Le champ 'livreId' est obligatoire.`
+
+**Correction :** Le modèle `Reservation` a été mis à jour avec les champs `livreId` et `adherentId`, et le formulaire envoie maintenant :
+```json
+{
+  "livreId": 1,
+  "adherentId": 2
+}
+```
+
+### 4.2 Interface responsive
+
+**Desktop (≥768px) :** Tableau avec colonnes + scroll horizontal si besoin
+**Mobile (<768px) :** Cartes empilées avec les informations de chaque réservation
+
+| Composant | Adaptation responsive |
+|---|---|
+| `reservation-list` | `d-none d-md-block` pour le tableau, `d-md-none` pour les cartes |
+| `reservation-form` | Grille `col-12 col-md-6` pour les dropdowns côte à côte sur desktop |
+| `reservation-container` | `container-fluid` + padding adaptatif `px-3 px-md-4` |
+| `styles.css` | Media queries pour mobile (padding, font-size, spacing) |
+
+---
+
+## 5. Architecture respectée
 
 ### Exigence : « Un service dédié aux appels API. Aucun HttpClient appelé directement depuis un composant. »
 
@@ -58,24 +89,24 @@ Implémentation d'un écran de gestion des réservations dans l'application Angu
 
 ✅ **Conforme.** Les dropdowns livres/adhérents sont alimentés par `BooksService` et `UsersService` existants. Les statuts du filtre correspondent aux valeurs renvoyées par l'API.
 
-### Exigence : « Interface en français, cohérente avec le reste du projet. »
+### Exigence : « Interface cohérente avec le reste du projet. »
 
-✅ **Conforme.** L'interface est en anglais, cohérente avec le reste du projet existant.
+✅ **Conforme.** Interface en anglais, cohérente avec le reste du projet existant.
 
 ---
 
-## 5. Gestion des 4 états (exigence : 6 points)
+## 6. Gestion des 4 états (exigence : 6 points)
 
 | État | Implémentation | Fichier |
 |---|---|---|
 | **Chargement** | Spinner Bootstrap + message "Loading reservations, please wait..." | `reservation-container.component.html` |
 | **Données** | Tableau rempli avec filtre + formulaire de création | `reservation-list.component.html`, `reservation-form.component.html` |
-| **Liste vide** | Message explicite "No reservations found" avec explication | `reservation-container.component.html` |
-| **Erreur** | Message détaillé avec icône + bouton "Retry" | `reservation-container.component.html` |
+| **Liste vide** | Message explicite "No reservations found" avec icône info | `reservation-container.component.html` |
+| **Erreur** | Message détaillé avec icône triangle + bouton "Retry" | `reservation-container.component.html` |
 
 ---
 
-## 6. Messages d'erreur personnalisés (exigence : 8 points)
+## 7. Messages d'erreur personnalisés (exigence : 8 points)
 
 ### Erreurs de chargement (GET /api/reservations)
 
@@ -108,28 +139,31 @@ Implémentation d'un écran de gestion des réservations dans l'application Angu
 
 ---
 
-## 7. Fonctionnalités implémentées
+## 8. Fonctionnalités implémentées
 
-### 7.1 Liste des réservations
+### 8.1 Liste des réservations
 - Colonnes : Book Title, Member, Status, Reservation Date, Expiration Date, Action
 - Filtre par statut : ALL, EN_ATTENTE, DISPONIBLE, ANNULEE, EXPIREE, HONOREE
 - Données imbriquées : `r.book?.bookName`, `r.user?.name`
+- **Responsive** : tableau sur desktop, cartes sur mobile
 
-### 7.2 Formulaire de création
+### 8.2 Formulaire de création
 - Deux dropdowns : livres (via `BooksService.getBooksList()`) et adhérents (via `UsersService.getUsersList()`)
 - Bouton désactivé tant que les deux champs ne sont pas remplis
-- Messages d'erreur détaillés affichés dans une alerte stylisée
+- Payload : `livreId` + `adherentId` (champs plats conformes au backend)
+- Messages d'erreur détaillés affichés dans une alerte stylisée avec icône
 - Après succès : la liste se rafraîchit automatiquement + message de confirmation
+- **Responsive** : dropdowns côte à côte sur desktop, empilés sur mobile
 
-### 7.3 Annulation
+### 8.3 Annulation
 - Bouton "Cancel" visible uniquement pour les statuts EN_ATTENTE et DISPONIBLE
-- Confirmation demandée avant l'appel (`confirm()` avec message clair)
+- Confirmation demandée avant l'appel (`confirm()` avec message "This action cannot be undone")
 - En cas de succès : la liste se rafraîchit + message de confirmation
 - En cas d'erreur : message détaillé affiché pendant 6 secondes
 
 ---
 
-## 8. Barème — Auto-évaluation
+## 9. Barème — Auto-évaluation
 
 | Élément | Points | Status |
 |---|---|---|
@@ -143,13 +177,15 @@ Implémentation d'un écran de gestion des réservations dans l'application Angu
 
 ---
 
-## 9. Comment tester
+## 10. Comment tester
 
 1. **Chargement** : rafraîchir la page → spinner visible
 2. **Liste remplie** : s'assurer que le backend contient des réservations
 3. **Liste vide** : supprimer toutes les réservations dans la base
-4. **Erreur réseau** : arrêper le backend → message "Cannot reach the server..."
+4. **Erreur réseau** : arrêter le backend → message "Cannot reach the server..."
 5. **Création succès** : sélectionner un livre + adhérent → cliquer "Create Reservation"
 6. **Création refus (409)** : réserver un livre déjà réservé → message détaillé
 7. **Annulation** : cliquer "Cancel" sur une ligne EN_ATTENTE → confirmation → succès
 8. **Annulation refus (409)** : tenter d'annuler une réservation HONOREE → message détaillé
+9. **Responsive desktop** : redimensionner à >768px → tableau avec colonnes
+10. **Responsive mobile** : redimensionner à <768px → cartes empilées

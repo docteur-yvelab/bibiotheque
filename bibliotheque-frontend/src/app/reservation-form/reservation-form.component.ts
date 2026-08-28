@@ -27,8 +27,8 @@ export class ReservationFormComponent {
       return;
     }
     const reservation = new Reservation();
-    reservation.book = { bookId: this.selectedBookId };
-    reservation.user = { userId: this.selectedUserId };
+    reservation.livreId = this.selectedBookId!;
+    reservation.adherentId = this.selectedUserId!;
     this.created.emit(reservation);
     this.selectedBookId = null;
     this.selectedUserId = null;

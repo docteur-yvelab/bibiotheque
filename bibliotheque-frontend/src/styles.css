@@ -1,2 +1,33 @@
 /* You can add global styles to this file, and also import other style files */
-@import "~bootstrap/dist/css/bootstrap.min.css"
+@import "~bootstrap/dist/css/bootstrap.min.css";
+
+/* Responsive table */
+.table-responsive {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Responsive card text */
+.card-text {
+  font-size: 0.9rem;
+}
+
+/* Responsive alerts */
+.alert svg {
+  flex-shrink: 0;
+}
+
+/* Better mobile spacing */
+@media (max-width: 575.98px) {
+  .container-fluid {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+  h2 {
+    font-size: 1.4rem;
+  }
+  .table th, .table td {
+    padding: 0.4rem;
+    font-size: 0.85rem;
+  }
+}
