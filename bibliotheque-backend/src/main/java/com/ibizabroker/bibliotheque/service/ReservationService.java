@@ -24,13 +24,15 @@ public class ReservationService {
     @Autowired
     private UsersRepository usersRepository;
 
-    // ================================================================
-    // POST /api/reservations — Créer une réservation
-    //
-    // RS-04 : Un ADHERENT ne peut créer que POUR LUI-MÊME.
-    //         Le paramètre adherentId du body est IGNORÉ pour un ADHERENT.
-    //         Un BIBLIOTHECAIRE peut créer pour n'importe qui.
-    // ================================================================
+    /**
+     * POST /api/reservations — Créer une réservation
+     *
+     * RG-01 : On ne peut réserver qu'un livre indisponible (noOfCopies == 0)
+     * RG-02 : Un adhérent ne peut avoir qu'une seule réservation active sur un même livre
+     * RG-03 : Un adhérent ne peut pas dépasser 3 réservations actives simultanées
+     * RG-04 : dateExpiration = dateReservation + 7 jours
+     * RS-04 : L'identité vient du token JWT, pas du body (pour ADHERENT)
+     */
     public ReservationResponse creerReservation(ReservationRequest request, Integer userId, boolean isBiblio) {
         // Validation des champs obligatoires
         if (request.getLivreId() == null) {
@@ -102,13 +104,13 @@ public class ReservationService {
         return new ReservationResponse(saved);
     }
 
-    // ================================================================
-    // GET /api/reservations — Lister les réservations
-    //
-    // RS-05 : Un ADHERENT ne voit QUE ses propres réservations.
-    //         Un BIBLIOTHECAIRE voit toutes les réservations.
-    //         Le BIBLIOTHECAIRE peut filtrer par adherentId.
-    // ================================================================
+    /**
+     * GET /api/reservations — Lister les réservations
+     *
+     * RS-05 : Un ADHERENT ne voit QUE ses propres réservations.
+     *         Un BIBLIOTHECAIRE voit toutes les réservations.
+     *         Le BIBLIOTHECAIRE peut filtrer par adherentId.
+     */
     public List<ReservationResponse> listerReservations(
             ReservationStatus statut, Integer filterAdherentId,
             Integer userId, boolean isBiblio) {
@@ -142,12 +144,12 @@ public class ReservationService {
         return responses;
     }
 
-    // ================================================================
-    // GET /api/reservations/{id} — Consulter une réservation
-    //
-    // RS-03 : ADHERENT ne peut consulter que SES réservations.
-    //         BIBLIOTHECAIRE peut consulter toutes les réservations.
-    // ================================================================
+    /**
+     * GET /api/reservations/{id} — Consulter une réservation
+     *
+     * RS-03 : ADHERENT ne peut consulter que SES réservations.
+     *         BIBLIOTHECAIRE peut consulter toutes les réservations.
+     */
     public ReservationResponse consulterReservation(Integer id, Integer userId, boolean isBiblio) {
         Reservation reservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Réservation avec l'id " + id + " non trouvée."));
@@ -160,12 +162,14 @@ public class ReservationService {
         return new ReservationResponse(reservation);
     }
 
-    // ================================================================
-    // PATCH /api/reservations/{id}/annuler — Annuler une réservation
-    //
-    // RS-03 : ADHERENT ne peut annuler que SES réservations.
-    //         BIBLIOTHECAIRE peut annuler n'importe quelle réservation.
-    // ================================================================
+    /**
+     * PATCH /api/reservations/{id}/annuler — Annuler une réservation
+     *
+     * RG-05 : Une réservation ne peut être annulée que si son statut est EN_ATTENTE ou DISPONIBLE
+     * RG-06 : Une réservation ANNULEE, EXPIREE ou HONOREE ne peut plus changer d'état
+     * RS-03 : ADHERENT ne peut annuler que SES réservations.
+     *         BIBLIOTHECAIRE peut annuler n'importe quelle réservation.
+     */
     public ReservationResponse annulerReservation(Integer id, Integer userId, boolean isBiblio) {
         Reservation reservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Réservation avec l'id " + id + " non trouvée."));
@@ -187,10 +191,10 @@ public class ReservationService {
         return new ReservationResponse(updated);
     }
 
-    // ================================================================
-    // DELETE /api/reservations/{id} — Supprimer une réservation
-    // (déjà filtré par Spring Security : BIBLIOTHECAIRE uniquement)
-    // ================================================================
+    /**
+     * DELETE /api/reservations/{id} — Supprimer une réservation
+     * (déjà filtré par Spring Security : BIBLIOTHECAIRE uniquement)
+     */
     public void supprimerReservation(Integer id) {
         Reservation reservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Réservation avec l'id " + id + " non trouvée."));
