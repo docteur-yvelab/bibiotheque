@@ -12,7 +12,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@CrossOrigin("http://localhost:4200/")
 @RestController
 @RequestMapping("/admin")
 public class BooksController {
@@ -25,20 +24,20 @@ public class BooksController {
         return booksRepository.findAll();
     }
 
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasRole('BIBLIOTHECAIRE')")
     @GetMapping("/books/{id}")
     public ResponseEntity<Books> getBookById(@PathVariable Integer id) {
         Books book = booksRepository.findById(id).orElseThrow(() -> new NotFoundException("Book with id "+ id +" does not exist."));
         return ResponseEntity.ok(book);
     }
 
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasRole('BIBLIOTHECAIRE')")
     @PostMapping("/books")
     public Books createBook(@RequestBody Books book) {
         return booksRepository.save(book);
     }
 
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasRole('BIBLIOTHECAIRE')")
     @PutMapping("/books/{id}")
     public ResponseEntity<Books> updateBook(@PathVariable Integer id, @RequestBody Books bookDetails) {
         Books book = booksRepository.findById(id).orElseThrow(() -> new NotFoundException("Book with id "+ id +" does not exist."));
@@ -52,7 +51,7 @@ public class BooksController {
         return ResponseEntity.ok(updatedBook);
     }
 
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasRole('BIBLIOTHECAIRE')")
     @DeleteMapping("/books/{id}")
     public ResponseEntity<Map<String, Boolean>> deleteBook(@PathVariable Integer id) {
         Books book = booksRepository.findById(id).orElseThrow(() -> new NotFoundException("Book with id "+ id +" does not exist."));

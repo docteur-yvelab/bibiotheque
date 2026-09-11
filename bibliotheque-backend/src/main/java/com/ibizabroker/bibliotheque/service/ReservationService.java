@@ -107,14 +107,22 @@ public class ReservationService {
     //
     // RS-05 : Un ADHERENT ne voit QUE ses propres réservations.
     //         Un BIBLIOTHECAIRE voit toutes les réservations.
+    //         Le BIBLIOTHECAIRE peut filtrer par adherentId.
     // ================================================================
-    public List<ReservationResponse> listerReservations(ReservationStatus statut, Integer userId, boolean isBiblio) {
+    public List<ReservationResponse> listerReservations(
+            ReservationStatus statut, Integer filterAdherentId,
+            Integer userId, boolean isBiblio) {
+
         List<Reservation> reservations;
 
         if (isBiblio) {
-            // BIBLIOTHECAIRE : voit tout, filtrable par statut
-            if (statut != null) {
+            // BIBLIOTHECAIRE : voit tout, filtrable par statut et/ou adherentId
+            if (statut != null && filterAdherentId != null) {
+                reservations = reservationRepository.findByAdherentIdAndStatut(filterAdherentId, statut);
+            } else if (statut != null) {
                 reservations = reservationRepository.findByStatut(statut);
+            } else if (filterAdherentId != null) {
+                reservations = reservationRepository.findByAdherentId(filterAdherentId);
             } else {
                 reservations = reservationRepository.findAll();
             }

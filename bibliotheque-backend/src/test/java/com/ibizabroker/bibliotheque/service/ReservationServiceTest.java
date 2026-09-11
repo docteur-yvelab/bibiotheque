@@ -415,7 +415,7 @@ class ReservationServiceTest {
             // Le repository ne retourne QUE les réservations d'ADHERENT1
             when(reservationRepository.findByAdherentId(ADHERENT1_ID)).thenReturn(List.of(r1));
 
-            List<ReservationResponse> result = reservationService.listerReservations(null, ADHERENT1_ID, false);
+            List<ReservationResponse> result = reservationService.listerReservations(null, null, ADHERENT1_ID, false);
 
             assertEquals(1, result.size());
             assertEquals(ADHERENT1_ID, result.get(0).getAdherentId());
@@ -437,7 +437,7 @@ class ReservationServiceTest {
 
             when(reservationRepository.findAll()).thenReturn(List.of(r1, r2));
 
-            List<ReservationResponse> result = reservationService.listerReservations(null, BIBLIO_ID, true);
+            List<ReservationResponse> result = reservationService.listerReservations(null, null, BIBLIO_ID, true);
 
             assertEquals(2, result.size());
             verify(reservationRepository).findAll();
@@ -456,7 +456,7 @@ class ReservationServiceTest {
                     .thenReturn(List.of(r1));
 
             List<ReservationResponse> result = reservationService.listerReservations(
-                    ReservationStatus.EN_ATTENTE, ADHERENT1_ID, false);
+                    ReservationStatus.EN_ATTENTE, null, ADHERENT1_ID, false);
 
             assertEquals(1, result.size());
             verify(reservationRepository).findByAdherentIdAndStatut(ADHERENT1_ID, ReservationStatus.EN_ATTENTE);

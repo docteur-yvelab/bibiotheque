@@ -15,13 +15,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @Tag(name = "Réservations", description = "Gestion des réservations de livres")
-@CrossOrigin("http://localhost:4200/")
 @RestController
 @RequestMapping("/api/reservations")
 public class ReservationController {
@@ -64,10 +62,11 @@ public class ReservationController {
     // GET /api/reservations — Lister les réservations
     // RS-05 : ADHERENT ne voit QUE ses réservations.
     //         BIBLIOTHECAIRE voit toutes les réservations.
+    //         BIBLIOTHECAIRE peut filtrer par adherentId.
     // ================================================================
     @Operation(summary = "Lister les réservations",
             description = "ADHERENT : voit ses réservations uniquement. " +
-                    "BIBLIOTHECAIRE : voit toutes les réservations. Filtrable par statut.")
+                    "BIBLIOTHECAIRE : voit toutes les réservations, filtrable par statut et/ou adherentId.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Liste retournée avec succès",
                     content = @Content(schema = @Schema(implementation = ReservationResponse.class))),
@@ -76,12 +75,15 @@ public class ReservationController {
     @GetMapping
     public ResponseEntity<List<ReservationResponse>> listerReservations(
             @Parameter(description = "Filtrer par statut")
-            @RequestParam(required = false) ReservationStatus statut) {
+            @RequestParam(required = false) ReservationStatus statut,
+            @Parameter(description = "Filtrer par identifiant adhérent (BIBLIOTHECAIRE uniquement)")
+            @RequestParam(required = false) Integer adherentId) {
 
         Integer userId = currentUserService.getAuthenticatedUserId();
         boolean isBiblio = currentUserService.isBibliothecaire();
 
-        List<ReservationResponse> reservations = reservationService.listerReservations(statut, userId, isBiblio);
+        List<ReservationResponse> reservations = reservationService.listerReservations(
+                statut, adherentId, userId, isBiblio);
         return ResponseEntity.ok(reservations);
     }
 
@@ -97,7 +99,7 @@ public class ReservationController {
             @ApiResponse(responseCode = "200", description = "Réservation trouvée",
                     content = @Content(schema = @Schema(implementation = ReservationResponse.class))),
             @ApiResponse(responseCode = "401", description = "Non authentifié"),
-            @ApiResponse(responseCode = "403", description = "Accès refusé —cette réservation ne vous appartient pas"),
+            @ApiResponse(responseCode = "403", description = "Accès refusé — cette réservation ne vous appartient pas"),
             @ApiResponse(responseCode = "404", description = "Réservation non trouvée")
     })
     @GetMapping("/{id}")

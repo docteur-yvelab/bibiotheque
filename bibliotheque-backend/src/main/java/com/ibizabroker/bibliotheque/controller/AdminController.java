@@ -14,7 +14,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-@CrossOrigin("http://localhost:4200/")
 @RestController
 @RequestMapping("/admin")
 public class AdminController {
@@ -26,11 +25,11 @@ public class AdminController {
     private PasswordEncoder passwordEncoder;
 
     @PostMapping("/users")
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasRole('BIBLIOTHECAIRE')")
     public Users addUserByAdmin(@RequestBody Users user) {
+        // Fix : utiliser le rôle ADHERENT par défaut au lieu du self-assignment
         Role role = new Role();
-        //role.setRoleName(UserConstant.DEFAULT_ROLE);
-        role.setRoleName(role.getRoleName());
+        role.setRoleName("ADHERENT");
         Set<Role> setRole = new HashSet<>();
         setRole.add(role);
         user.setRole(setRole);
@@ -42,19 +41,19 @@ public class AdminController {
     }
 
     @GetMapping("/users")
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasRole('BIBLIOTHECAIRE')")
     public List<Users> getAllUsers() {
         return usersRepository.findAll();
     }
 
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasRole('BIBLIOTHECAIRE')")
     @GetMapping("/users/{id}")
     public ResponseEntity<Users> getUserById(@PathVariable Integer id) {
         Users user = usersRepository.findById(id).orElseThrow(() -> new NotFoundException("User with id "+ id +" does not exist."));
         return ResponseEntity.ok(user);
     }
 
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasRole('BIBLIOTHECAIRE')")
     @PutMapping("/users/{id}")
     public ResponseEntity<Users> updateUser(@PathVariable Integer id, @RequestBody Users userDetails) {
         Users user = usersRepository.findById(id).orElseThrow(() -> new NotFoundException("User with id "+ id +" does not exist."));
