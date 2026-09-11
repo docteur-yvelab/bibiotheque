@@ -3,6 +3,7 @@
 **Branche** : `feature/reservation-securite-thiakou-stive`
 **Date** : 11 septembre 2026
 **Technologies** : Spring Boot 3.2.5 · Spring Security 6.2 · JWT (JJWT 0.12.5) · Java 21
+**Tests** : ✅ 54/54 — BUILD SUCCESS
 
 ---
 
@@ -18,7 +19,7 @@
 | `JwtUtil.java` | Génération, validation et parsing des tokens JWT |
 | `JwtService.java` | Service d'authentification + UserDetailsService |
 | `CurrentUserService.java` | Utilitaire pour extraire l'utilisateur courant depuis SecurityContext |
-| `CorsConfiguration.java` | Configuration CORS globale |
+| `CorsConfiguration.java` | Configuration CORS globale (unique source) |
 
 ### 1.2 Chaîne de filtres
 
@@ -26,7 +27,7 @@
 Requête HTTP
     │
     ▼
-CorsFilter
+CorsFilter (CorsConfiguration.java)
     │
     ▼
 JwtRequestFilter
@@ -37,7 +38,7 @@ JwtRequestFilter
     │
     ▼
 AuthorizationFilter
-    │  ├─ Vérifie les rôles (@PreAuthorize, hasRole)
+    │  ├─ Vérifie les rôles (hasRole dans SecurityFilterChain + @PreAuthorize)
     │  └─ Appelle JwtAuthenticationEntryPoint si échec
     │
     ▼
@@ -48,8 +49,8 @@ Contrôleur
 
 | Rôle | Description | Autorisations |
 |------|-------------|---------------|
-| `ADHERENT` | Membre de la bibliothèque | CRUD réservations (ses propres données uniquement) |
-| `BIBLIOTHECAIRE` | Personnel de la bibliothèque | CRUD complet + suppression + gestion users/livres |
+| `ADHERENT` | Membre de la bibliothèque | Réservations (ses propres données uniquement) |
+| `BIBLIOTHECAIRE` | Personnel de la bibliothèque | CRUD complet + suppression + gestion users/livres/emprunts |
 
 **Mapping base de données → Spring Security :**
 ```
@@ -66,30 +67,41 @@ Role.roleName = "BIBLIOTHECAIRE" → Authority = "ROLE_BIBLIOTHECAIRE"
 | Méthode | Endpoint | Anonyme | ADHERENT | BIBLIOTHECAIRE |
 |---------|----------|---------|----------|----------------|
 | `POST` | `/api/reservations` | ❌ 401 | ✅ Pour lui-même | ✅ Pour n'importe qui |
-| `GET` | `/api/reservations` | ❌ 401 | ✅ Ses réservations | ✅ Toutes |
+| `GET` | `/api/reservations` | ❌ 401 | ✅ Ses réservations | ✅ Toutes (filtrable par adherentId) |
 | `GET` | `/api/reservations/{id}` | ❌ 401 | ✅ Si elle lui appartient | ✅ Toutes |
 | `PATCH` | `/api/reservations/{id}/annuler` | ❌ 401 | ✅ Si elle lui appartient | ✅ Toutes |
 | `DELETE` | `/api/reservations/{id}` | ❌ 401 | ❌ 403 Forbidden | ✅ Toutes |
 
-### 2.2 Endpoints Livres (`/admin`)
+### 2.2 Endpoints Livres (`/admin/books`)
 
 | Méthode | Endpoint | Anonyme | ADHERENT | BIBLIOTHECAIRE |
 |---------|----------|---------|----------|----------------|
-| `GET` | `/admin/books` | ❌ 403 | ❌ 403 | ✅ |
-| `GET` | `/admin/books/{id}` | ❌ 403 | ❌ 403 | ✅ |
-| `POST` | `/admin/books` | ❌ 403 | ❌ 403 | ✅ |
-| `PUT` | `/admin/books/{id}` | ❌ 403 | ❌ 403 | ✅ |
-| `DELETE` | `/admin/books/{id}` | ❌ 403 | ❌ 403 | ✅ |
+| `GET` | `/admin/books` | ❌ 401 | ❌ 403 | ✅ |
+| `GET` | `/admin/books/{id}` | ❌ 401 | ❌ 403 | ✅ (`@PreAuthorize`) |
+| `POST` | `/admin/books` | ❌ 401 | ❌ 403 | ✅ (`@PreAuthorize`) |
+| `PUT` | `/admin/books/{id}` | ❌ 401 | ❌ 403 | ✅ (`@PreAuthorize`) |
+| `DELETE` | `/admin/books/{id}` | ❌ 401 | ❌ 403 | ✅ (`@PreAuthorize`) |
 
-### 2.3 Endpoints Emprunts (`/borrow`)
+### 2.3 Endpoints Utilisateurs (`/admin/users`)
 
 | Méthode | Endpoint | Anonyme | ADHERENT | BIBLIOTHECAIRE |
 |---------|----------|---------|----------|----------------|
-| `POST` | `/borrow` | ❌ 401 | ✅ | ✅ |
-| `GET` | `/borrow` | ❌ 401 | ✅ | ✅ |
-| `PUT` | `/borrow` | ❌ 401 | ✅ | ✅ |
+| `POST` | `/admin/users` | ❌ 401 | ❌ 403 | ✅ (`@PreAuthorize`) |
+| `GET` | `/admin/users` | ❌ 401 | ❌ 403 | ✅ (`@PreAuthorize`) |
+| `GET` | `/admin/users/{id}` | ❌ 401 | ❌ 403 | ✅ (`@PreAuthorize`) |
+| `PUT` | `/admin/users/{id}` | ❌ 401 | ❌ 403 | ✅ (`@PreAuthorize`) |
 
-### 2.4 Endpoints Publics
+### 2.4 Endpoints Emprunts (`/borrow`)
+
+| Méthode | Endpoint | Anonyme | ADHERENT | BIBLIOTHECAIRE |
+|---------|----------|---------|----------|----------------|
+| `POST` | `/borrow` | ❌ 401 | ❌ 403 | ✅ (`@PreAuthorize`) |
+| `GET` | `/borrow` | ❌ 401 | ❌ 403 | ✅ (`@PreAuthorize`) |
+| `PUT` | `/borrow` | ❌ 401 | ❌ 403 | ✅ (`@PreAuthorize`) |
+| `GET` | `/borrow/user/{id}` | ❌ 401 | ❌ 403 | ✅ (`@PreAuthorize`) |
+| `GET` | `/borrow/book/{id}` | ❌ 401 | ❌ 403 | ✅ (`@PreAuthorize`) |
+
+### 2.5 Endpoints Publics
 
 | Méthode | Endpoint | Description |
 |---------|----------|-------------|
@@ -104,7 +116,7 @@ Role.roleName = "BIBLIOTHECAIRE" → Authority = "ROLE_BIBLIOTHECAIRE"
 ### RS-01 : Sans token JWT → 401 Unauthorized
 
 **Implémentation :**
-- `WebSecurityConfiguration.java` : tous les endpoints réservation sont `authenticated()`
+- `WebSecurityConfiguration.java` : tous les endpoints privés sont `authenticated()`
 - `JwtAuthenticationEntryPoint.java` : retourne `401 Unauthorized` si non authentifié
 - `JwtRequestFilter.java` : si le token est absent/invalide/expiré, l'utilisateur reste anonyme
 
@@ -118,13 +130,20 @@ Role.roleName = "BIBLIOTHECAIRE" → Authority = "ROLE_BIBLIOTHECAIRE"
 ### RS-02 : ADHERENT → 403 Forbidden sur actions réservées au BIBLIOTHECAIRE
 
 **Implémentation :**
-- `WebSecurityConfiguration.java` : `DELETE /api/reservations/**` est réservé à `hasRole("BIBLIOTHECAIRE")`
+- `WebSecurityConfiguration.java` : `DELETE /api/reservations/**` réservé à `hasRole("BIBLIOTHECAIRE")`
+- `BooksController.java` : tous les endpoints CRUD livres avec `@PreAuthorize("hasRole('BIBLIOTHECAIRE')")`
+- `AdminController.java` : tous les endpoints CRUD users avec `@PreAuthorize("hasRole('BIBLIOTHECAIRE')")`
+- `BorrowController.java` : tous les endpoints emprunts avec `@PreAuthorize("hasRole('BIBLIOTHECAIRE')")`
 - `GlobalExceptionHandler.java` : handler pour `AccessDeniedException` → 403
 
 **Code :**
 ```java
 // WebSecurityConfiguration.java
 .requestMatchers(HttpMethod.DELETE, "/api/reservations/**").hasRole("BIBLIOTHECAIRE")
+.requestMatchers("/admin/**").hasRole("BIBLIOTHECAIRE")
+
+// BooksController.java, AdminController.java, BorrowController.java
+@PreAuthorize("hasRole('BIBLIOTHECAIRE')")
 ```
 
 ### RS-03 : ADHERENT ne peut pas accéder aux réservations d'un autre
@@ -164,13 +183,30 @@ if (!isBiblio) {
 
 **Implémentation :**
 - `ReservationService.listerReservations()` : pour un ADHERENT, appelle `findByAdherentId(userId)`
+- `ReservationController.java` : accepte un paramètre `adherentId` optionnel pour le BIBLIOTHECAIRE
 
 **Code :**
 ```java
+// ReservationController.java
+@GetMapping
+public ResponseEntity<List<ReservationResponse>> listerReservations(
+        @RequestParam(required = false) ReservationStatus statut,
+        @RequestParam(required = false) Integer adherentId) {
+
+// ReservationService.java
 if (isBiblio) {
-    reservations = statut != null ? repository.findByStatut(statut) : repository.findAll();
+    // BIBLIOTHECAIRE : voit tout, filtrable par statut et/ou adherentId
+    if (statut != null && filterAdherentId != null) {
+        reservations = repository.findByAdherentIdAndStatut(filterAdherentId, statut);
+    } else if (statut != null) {
+        reservations = repository.findByStatut(statut);
+    } else if (filterAdherentId != null) {
+        reservations = repository.findByAdherentId(filterAdherentId);
+    } else {
+        reservations = repository.findAll();
+    }
 } else {
-    // RS-05 : l'ADHERENT ne voit que ses réservations
+    // RS-05 : ADHERENT ne voit que ses réservations
     reservations = statut != null
         ? repository.findByAdherentIdAndStatut(userId, statut)
         : repository.findByAdherentId(userId);
@@ -205,7 +241,7 @@ Response: {
 
 - **Avant** : hardcodée dans `JwtUtil.java`
 - **Maintenant** : variable d'environnement `JWT_SECRET` avec fallback développement
-- **Recommandation** : configurer `JWT_SECRET` dans `.env` ou `docker-compose.yml`
+- **Configuration** : `docker-compose.yml` ou fichier `.env`
 
 ### 4.4 Validation
 
@@ -214,7 +250,6 @@ Response: {
 if (requestTokenHeader != null && requestTokenHeader.startsWith("Bearer ")) {
     jwtToken = requestTokenHeader.substring(7);
     username = jwtUtil.getUsernameFromToken(jwtToken);
-    // ...
     if (jwtUtil.validateToken(jwtToken, userDetails)) {
         // Token valide → authentification enregistrée
     }
@@ -228,7 +263,7 @@ if (requestTokenHeader != null && requestTokenHeader.startsWith("Bearer ")) {
 | Code | Signification | Cas d'usage |
 |------|---------------|-------------|
 | **401 Unauthorized** | Token absent, invalide ou expiré | Pas de header `Authorization` / Token expiré / Mauvaise signature |
-| **403 Forbidden** | Utilisateur authentifié mais sans droits | ADHERENT qui tente DELETE / ADHERENT accédant à une réservation d'un autre |
+| **403 Forbidden** | Utilisateur authentifié mais sans droits | ADHERENT qui tente DELETE / ADHERENT accédant à une réservation d'un autre / ADHERENT sur /admin ou /borrow |
 
 **Implémentation :**
 - 401 → `JwtAuthenticationEntryPoint` (géré par Spring Security)
@@ -236,45 +271,22 @@ if (requestTokenHeader != null && requestTokenHeader.startsWith("Bearer ")) {
 
 ---
 
-## 6. FLUX D'AUTHENTIFICATION COMPLET
-
-```
-1. Client → POST /authenticate { "username": "A1", "password": "123456" }
-2. JwtController → JwtService.createJwtToken()
-3. JwtService → authenticate() via AuthenticationManager
-4. JwtService → loadUserByUsername() → UserDetailsService
-5. JwtService → JwtUtil.generateToken(userDetails) → token JWT
-6. Client reçoit { "user": {...}, "jwtToken": "eyJ..." }
-
---- Requêtes suivantes ---
-
-7. Client → GET /api/reservations
-   Header: Authorization: Bearer eyJ...
-8. JwtRequestFilter → parse le token
-9. JwtUtil → validateToken() → username + expiry check
-10. SecurityContextHolder → Authentication enregistrée
-11. AuthorizationFilter → vérifie les rôles
-12. ReservationController → CurrentUserService.getAuthenticatedUserId()
-13. ReservationService → filtre selon isBiblio
-```
-
----
-
-## 7. DONNÉES DE TEST (init_data.sql)
+## 6. DONNÉES DE TEST (init_data.sql)
 
 | Entité | Valeurs |
 |--------|---------|
-| Livres | L1 (1 copie), L2-L5 (0 copies) |
-| Adhérents | A1 (userId=2), A2 (userId=3), A3 (userId=4) |
-| Rôle | User → mapping vers `ADHERENT` ou `BIBLIOTHECAIRE` |
-| Emprunts | A3 a emprunté L2, L3, L4, L5 |
+| Admin | userId=1, username=`admin`, password=`123456`, rôle=BIBLIOTHECAIRE |
+| Adhérent A1 | userId=2, username=`A1`, password=`123456`, rôle=ADHERENT |
+| Adhérent A2 | userId=3, username=`A2`, password=`123456`, rôle=ADHERENT |
+| Adhérent A3 | userId=4, username=`A3`, password=`123456`, rôle=ADHERENT |
+| Livres | L1 (1 copie), L2-L5 (0 copies, empruntés par A3) |
 
 ---
 
-## 8. RÉSULTATS DES TESTS
+## 7. RÉSULTATS DES TESTS
 
 ```
-Tests run: 29, Failures: 0, Errors: 0, Skipped: 0
+Tests run: 54, Failures: 0, Errors: 0, Skipped: 0
 BUILD SUCCESS
 ```
 
@@ -285,34 +297,32 @@ BUILD SUCCESS
 | RG-03 : Max 3 réservations | 2 | ✅ |
 | RG-04 : Date expiration +7j | 1 | ✅ |
 | RG-05/RG-06 : Annulation | 5 | ✅ |
-| RS-03 : Accès propriétaire seul | 5 | ✅ |
-| RS-04 : Identité du token | 2 | ✅ |
-| RS-05 : Filtrage automatique | 3 | ✅ |
-| Cas limites | 6 | ✅ |
+| RS-01 : Sans token → 401 | 7 (intégration) | ✅ |
+| RS-02 : DELETE → 403 | 3 (intégration) | ✅ |
+| RS-03 : Accès propriétaire seul | 5 + 4 | ✅ |
+| RS-04 : Identité du token | 2 + 3 | ✅ |
+| RS-05 : Filtrage automatique | 3 + 3 | ✅ |
+| Cas limites | 6 + 5 | ✅ |
 
 ---
 
-## 9. VULNÉRABILITÉS IDENTIFIÉES ET CORRIGÉES
+## 8. BUGS CORRIGÉS
 
-| Vulnérabilité | Risque avant | Statut après |
-|---------------|-------------|--------------|
-| Clé JWT hardcodée | 🔴 Élevé | ✅ Variable d'environnement |
-| Endpoints réservation publics | 🔴 Élevé | ✅ `authenticated()` partout |
-| ADHERENT voit toutes les réservations | 🔴 Élevé | ✅ Filtrage par `userId` |
-| `adherentId` exploitable depuis le body | 🔴 Élevé | ✅ Ignoré pour ADHERENT |
-| Pas de distinction 401/403 | 🟡 Moyen | ✅ 401 (token) vs 403 (rôle) |
-| Mot de passe admin réinitialisé à chaque start | 🟡 Moyen | ✅ Vérification BCrypt existant |
-| `System.out.println` dans le filtre JWT | 🟡 Moyen | ⚠️ À corriger (logging structuré) |
+| # | Bug | Gravité | Fichier | Correction |
+|---|-----|---------|---------|------------|
+| 1 | `hasRole('Admin')` au lieu de `hasRole('BIBLIOTHECAIRE')` | 🔴 | BooksController, AdminController | Remplacement du nom de rôle |
+| 2 | `role.setRoleName(role.getRoleName())` → null | 🔴 | AdminController | `role.setRoleName("ADHERENT")` |
+| 3 | BorrowController sans aucune sécurité | 🔴 | BorrowController | `@PreAuthorize("hasRole('BIBLIOTHECAIRE')")` sur tous les endpoints write |
+| 4 | GET /api/reservations sans filtre adherentId | 🟡 | ReservationController, ReservationService | Ajout du paramètre `adherentId` |
+| 5 | `@CrossOrigin("localhost:4200")` dupliqué et hardcodé | 🟡 | Tous les controllers | Suppression (CorsConfiguration globale) |
 
 ---
 
-## 10. RECOMMANDATIONS
+## 9. VULNÉRABILITÉS RÉSIDUELLES
 
-| # | Priorité | Recommandation |
-|---|----------|----------------|
-| 1 | 🔴 Haute | Définir `JWT_SECRET` dans `docker-compose.yml` avec valeur strong |
-| 2 | 🟡 Moyenne | Remplacer les `System.out.println` par SLF4J Logger |
-| 3 | 🟡 Moyenne | Implémenter un refresh token pour renouveler les sessions |
-| 4 | 🟡 Moyenne | Ajouter un rate limiter sur `/authenticate` |
-| 5 | 🟢 Basse | Ajouter des annotations `@Validated` sur les DTOs |
-| 6 | 🟢 Basse | Considérer un `@RequestParam adherentId` optionnel pour le DELETE admin |
+| Vulnérabilité | Risque | Statut |
+|---------------|--------|--------|
+| `System.out.println` dans JwtRequestFilter | 🟡 Moyen | ⚠️ À remplacer par SLF4J |
+| Pas de refresh token | 🟡 Moyen | ⚠️ Prévu comme amélioration |
+| Pas de rate limiting sur /authenticate | 🟡 Moyen | ⚠️ Prévu comme amélioration |
+| Reservation utilise des IDs au lieu de @ManyToOne | 🟢 Basse | ⚠️ Écart architectural |
