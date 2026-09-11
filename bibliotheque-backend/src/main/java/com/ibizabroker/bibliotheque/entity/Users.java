@@ -1,5 +1,6 @@
 package com.ibizabroker.bibliotheque.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.util.Set;
 
@@ -11,6 +12,9 @@ public class Users {
     private Integer userId;
     private String username;
     private String name;
+
+    /** Jamais sérialisé en JSON (ne doit jamais fuiter dans les réponses API) */
+    @JsonIgnore
     private String password;
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)

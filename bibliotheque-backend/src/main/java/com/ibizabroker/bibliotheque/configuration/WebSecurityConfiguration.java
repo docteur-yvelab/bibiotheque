@@ -10,7 +10,6 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -25,10 +24,10 @@ public class WebSecurityConfiguration {
     private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
     @Autowired
-    private JwtRequestFilter jwtRequestFilter;
+    private JsonAccessDeniedHandler jsonAccessDeniedHandler;
 
     @Autowired
-    private UserDetailsService jwtService;
+    private JwtRequestFilter jwtRequestFilter;
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
@@ -43,27 +42,28 @@ public class WebSecurityConfiguration {
                 .authorizeHttpRequests(auth -> auth
                         // ── Public ──────────────────────────────────────────
                         .requestMatchers("/authenticate").permitAll()
+                        .requestMatchers("/error").permitAll()
                         .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**",
                                 "/swagger-resources/**", "/webjars/**").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
                         // ── DELETE réservation : BIBLIOTHECAIRE uniquement ──
-                        // ⚠️ IMPORTANT : doit AVANT le matcher général /api/reservations/**
                         .requestMatchers(HttpMethod.DELETE, "/api/reservations/**").hasRole("BIBLIOTHECAIRE")
 
                         // ── Admin endpoints ────────────────────────────────
                         .requestMatchers("/admin/**").hasRole("BIBLIOTHECAIRE")
 
-                        // ── Borrow endpoints ───────────────────────────────
+                        // ── Livres, Borrow, Réservations (authentifiés) ────
+                        .requestMatchers("/api/books/**").authenticated()
                         .requestMatchers("/borrow/**").authenticated()
-
-                        // ── Réservation endpoints (tous authentifiés) ──────
                         .requestMatchers("/api/reservations/**").authenticated()
 
                         // ── Catch-all ──────────────────────────────────────
                         .anyRequest().authenticated()
                 )
-                .exceptionHandling(ex -> ex.authenticationEntryPoint(jwtAuthenticationEntryPoint))
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                        .accessDeniedHandler(jsonAccessDeniedHandler))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         httpSecurity.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);

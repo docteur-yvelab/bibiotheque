@@ -4,6 +4,7 @@ import com.ibizabroker.bibliotheque.dao.UsersRepository;
 import com.ibizabroker.bibliotheque.entity.JwtRequest;
 import com.ibizabroker.bibliotheque.entity.JwtResponse;
 import com.ibizabroker.bibliotheque.entity.Users;
+import com.ibizabroker.bibliotheque.exceptions.InvalidCredentialsException;
 import com.ibizabroker.bibliotheque.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -78,13 +79,13 @@ public class JwtService implements UserDetailsService {
         return authorities;
     }
 
-    private void authenticate(String userName, String userPassword) throws Exception {
+    private void authenticate(String userName, String userPassword) {
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userName, userPassword));
         } catch (DisabledException e) {
-            throw new Exception("USER_DISABLED", e);
+            throw new InvalidCredentialsException("USER_DISABLED");
         } catch (BadCredentialsException e) {
-            throw new Exception("INVALID_CREDENTIALS", e);
+            throw new InvalidCredentialsException("INVALID_CREDENTIALS");
         }
     }
 }

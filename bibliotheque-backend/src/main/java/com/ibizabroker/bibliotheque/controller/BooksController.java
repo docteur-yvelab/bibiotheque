@@ -13,34 +13,39 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/admin")
+@RequestMapping("/api/books")
 public class BooksController {
 
     @Autowired
     private BooksRepository booksRepository;
 
-    @GetMapping("/books")
-    public List<Books> getAllBooks(){
+    // GET /api/books — Accessible à tous les utilisateurs authentifiés
+    @GetMapping
+    public List<Books> getAllBooks() {
         return booksRepository.findAll();
     }
 
-    @PreAuthorize("hasRole('BIBLIOTHECAIRE')")
-    @GetMapping("/books/{id}")
+    // GET /api/books/{id}
+    @GetMapping("/{id}")
     public ResponseEntity<Books> getBookById(@PathVariable Integer id) {
-        Books book = booksRepository.findById(id).orElseThrow(() -> new NotFoundException("Book with id "+ id +" does not exist."));
+        Books book = booksRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Book with id " + id + " does not exist."));
         return ResponseEntity.ok(book);
     }
 
+    // POST /api/books — Réservé au BIBLIOTHECAIRE
     @PreAuthorize("hasRole('BIBLIOTHECAIRE')")
-    @PostMapping("/books")
+    @PostMapping
     public Books createBook(@RequestBody Books book) {
         return booksRepository.save(book);
     }
 
+    // PUT /api/books/{id} — Réservé au BIBLIOTHECAIRE
     @PreAuthorize("hasRole('BIBLIOTHECAIRE')")
-    @PutMapping("/books/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<Books> updateBook(@PathVariable Integer id, @RequestBody Books bookDetails) {
-        Books book = booksRepository.findById(id).orElseThrow(() -> new NotFoundException("Book with id "+ id +" does not exist."));
+        Books book = booksRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Book with id " + id + " does not exist."));
 
         book.setBookName(bookDetails.getBookName());
         book.setBookAuthor(bookDetails.getBookAuthor());
@@ -51,10 +56,12 @@ public class BooksController {
         return ResponseEntity.ok(updatedBook);
     }
 
+    // DELETE /api/books/{id} — Réservé au BIBLIOTHECAIRE
     @PreAuthorize("hasRole('BIBLIOTHECAIRE')")
-    @DeleteMapping("/books/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Map<String, Boolean>> deleteBook(@PathVariable Integer id) {
-        Books book = booksRepository.findById(id).orElseThrow(() -> new NotFoundException("Book with id "+ id +" does not exist."));
+        Books book = booksRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Book with id " + id + " does not exist."));
 
         booksRepository.delete(book);
         Map<String, Boolean> response = new HashMap<>();

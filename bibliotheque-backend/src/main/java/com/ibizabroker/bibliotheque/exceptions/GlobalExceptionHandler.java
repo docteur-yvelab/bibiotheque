@@ -14,6 +14,19 @@ import java.util.Map;
 public class GlobalExceptionHandler {
 
     /**
+     * 401 Unauthorized — Identifiants invalides (mauvais username/mot de passe)
+     */
+    @ExceptionHandler(InvalidCredentialsException.class)
+    public ResponseEntity<Map<String, Object>> handleInvalidCredentialsException(InvalidCredentialsException ex) {
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("timestamp", LocalDateTime.now());
+        body.put("status", HttpStatus.UNAUTHORIZED.value());
+        body.put("error", "Unauthorized");
+        body.put("message", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(body);
+    }
+
+    /**
      * 403 Forbidden — Utilisateur authentifié mais sans droits suffisants (RS-03)
      */
     @ExceptionHandler(AccessDeniedException.class)
