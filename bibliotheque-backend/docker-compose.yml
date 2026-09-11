@@ -1,0 +1,43 @@
+version: "3.8"
+
+services:
+  # ── PostgreSQL ────────────────────────────────────────────────
+  db:
+    image: postgres:16-alpine
+    container_name: bibliotheque-db
+    environment:
+      POSTGRES_DB: bibliotheque
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-123456}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./init_data.sql:/docker-entrypoint-initdb.d/01-init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d bibliotheque"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # ── Backend Spring Boot ───────────────────────────────────────
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: bibliotheque-backend
+    ports:
+      - "8080:8080"
+    environment:
+      # Base de données
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/bibliotheque
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:-123456}
+      # JWT — clé secrète pour la production (DOIT être changée)
+      JWT_SECRET: ${JWT_SECRET:-change-me-in-production-this-is-a-very-long-secret-key-for-hs512}
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  pgdata:

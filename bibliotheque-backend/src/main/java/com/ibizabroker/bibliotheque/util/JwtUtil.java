@@ -17,12 +17,17 @@ import java.util.function.Function;
 @Component
 public class JwtUtil {
 
-    private static final String SECRET_KEY = "learn_programming_yourself_this_is_a_long_key_for_hs512_algorithm_2024";
+    // RS-04 : La clé secrète doit provenir d'une variable d'environnement
+    // Fallback pour le développement uniquement
+    private static final String DEFAULT_SECRET = "learn_programming_yourself_this_is_a_long_key_for_hs512_algorithm_2024";
 
-    private static final int TOKEN_VALIDITY = 3600 * 5;
+    private static final int TOKEN_VALIDITY = 3600 * 5; // 5 heures
+
+    @Value("${JWT_SECRET:" + DEFAULT_SECRET + "}")
+    private String jwtSecret;
 
     private SecretKey getSigningKey() {
-        return Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
+        return Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
     }
 
     public String getUsernameFromToken(String token) {

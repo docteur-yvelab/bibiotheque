@@ -59,11 +59,20 @@ public class JwtService implements UserDetailsService {
         );
     }
 
+    /**
+     * Convertit les rôles de la base (ex: "ADHERENT", "BIBLIOTHECAIRE")
+     * en authorities Spring Security (ex: "ROLE_ADHERENT", "ROLE_BIBLIOTHECAIRE").
+     */
     private Set<SimpleGrantedAuthority> getAuthority(Users user) {
         Set<SimpleGrantedAuthority> authorities = new HashSet<>();
         if (user.getRole() != null) {
             user.getRole().forEach(role -> {
-                authorities.add(new SimpleGrantedAuthority("ROLE_" + role.getRoleName()));
+                // Préfixe ROLE_ pour compatibilité avec @PreAuthorize("hasRole('...')")
+                String roleName = role.getRoleName();
+                if (!roleName.startsWith("ROLE_")) {
+                    roleName = "ROLE_" + roleName;
+                }
+                authorities.add(new SimpleGrantedAuthority(roleName));
             });
         }
         return authorities;

@@ -1,5 +1,6 @@
 package com.ibizabroker.bibliotheque.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import java.util.Date;
@@ -11,12 +12,17 @@ public class ReservationResponse {
     private Integer adherentId;
 
     @JsonSerialize(using = JsonDataSerializer.class)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
     private Date dateReservation;
 
     @JsonSerialize(using = JsonDataSerializer.class)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
     private Date dateExpiration;
 
     private ReservationStatus statut;
+
+    // Constructeur par défaut (requis pour Jackson / désérialisation)
+    public ReservationResponse() {}
 
     // Constructeur à partir de l'entité Reservation
     public ReservationResponse(Reservation reservation) {

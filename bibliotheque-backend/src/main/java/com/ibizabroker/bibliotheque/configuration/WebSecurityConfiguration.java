@@ -41,9 +41,26 @@ public class WebSecurityConfiguration {
                 .cors(cors -> {})
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/authenticate", "/borrow/**", "/admin/books/", "/api/reservations", "/api/reservations/**").permitAll()
-                        .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**").permitAll()
+                        // ── Public ──────────────────────────────────────────
+                        .requestMatchers("/authenticate").permitAll()
+                        .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**",
+                                "/swagger-resources/**", "/webjars/**").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
+                        // ── DELETE réservation : BIBLIOTHECAIRE uniquement ──
+                        // ⚠️ IMPORTANT : doit AVANT le matcher général /api/reservations/**
+                        .requestMatchers(HttpMethod.DELETE, "/api/reservations/**").hasRole("BIBLIOTHECAIRE")
+
+                        // ── Admin endpoints ────────────────────────────────
+                        .requestMatchers("/admin/**").hasRole("BIBLIOTHECAIRE")
+
+                        // ── Borrow endpoints ───────────────────────────────
+                        .requestMatchers("/borrow/**").authenticated()
+
+                        // ── Réservation endpoints (tous authentifiés) ──────
+                        .requestMatchers("/api/reservations/**").authenticated()
+
+                        // ── Catch-all ──────────────────────────────────────
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(jwtAuthenticationEntryPoint))

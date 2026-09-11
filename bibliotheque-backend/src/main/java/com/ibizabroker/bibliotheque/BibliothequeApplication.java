@@ -18,9 +18,12 @@ public class BibliothequeApplication {
 	public CommandLineRunner fixAdminPassword(UsersRepository usersRepository, PasswordEncoder passwordEncoder) {
 		return args -> {
 			usersRepository.findByUsername("admin").ifPresent(user -> {
-				user.setPassword(passwordEncoder.encode("123456"));
-				usersRepository.save(user);
-				System.out.println(">>> MOT DE PASSE ADMIN REINITIALISE AVEC SUCCES POUR '123456' <<<");
+				// Ne réinitialise le mot de passe que s'il n'est pas déjà encodé
+				if (!user.getPassword().startsWith("$2a$")) {
+					user.setPassword(passwordEncoder.encode("123456"));
+					usersRepository.save(user);
+					System.out.println(">>> MOT DE PASSE ADMIN REINITIALISE AVEC SUCCES POUR '123456' <<<");
+				}
 			});
 		};
 	}
