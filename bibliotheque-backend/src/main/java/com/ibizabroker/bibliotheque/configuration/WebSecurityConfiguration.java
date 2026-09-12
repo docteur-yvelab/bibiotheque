@@ -60,6 +60,10 @@ public class WebSecurityConfiguration {
                         .requestMatchers("/authenticate", "/borrow/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/admin/books").permitAll()
                         .requestMatchers(HttpMethod.GET, "/admin/books/*").permitAll()
+                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+                        // Séance 2 : endpoints de réservation publics tant que la
+                        // séance 4 (sécurisation) n'est pas appliquée sur cette branche.
+                        .requestMatchers("/api/reservations/**").permitAll()
                         .requestMatchers(HttpHeaders.ALLOW).permitAll()
                         .anyRequest().authenticated())
                 .exceptionHandling(handling -> handling
