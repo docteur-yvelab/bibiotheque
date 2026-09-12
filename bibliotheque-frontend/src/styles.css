@@ -1,2 +1,205 @@
-/* You can add global styles to this file, and also import other style files */
-@import "~bootstrap/dist/css/bootstrap.min.css"
+/* ============================================================
+   Styles globaux — thème clair & chaleureux « Bibliothèque »
+   Palette : fond crème #faf7f2, encre #44403c, ambre #d97706,
+   terracotta #b45309, papier #ffffff, sable #fef7ed.
+   ============================================================ */
+
+@import "~bootstrap/dist/css/bootstrap.min.css";
+
+:root {
+  --creme: #faf7f2;
+  --papier: #ffffff;
+  --encre: #44403c;
+  --encre-douce: #78716c;
+  --ambre: #d97706;
+  --ambre-fonce: #b45309;
+  --sable: #fef7ed;
+  --sable-bordure: #e7dccd;
+  --ombre: 0 6px 24px rgba(146, 94, 36, 0.12);
+  --rayon: 16px;
+}
+
+/* ---------- Fond et typographie ---------- */
+
+body {
+  background-color: var(--creme) !important;
+  color: var(--encre);
+  font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  min-height: 100vh;
+}
+
+h1, h2, h3, h4 {
+  color: var(--encre);
+}
+
+/* ---------- Navigation harmonisée ---------- */
+
+.navbar.bg-dark,
+.navbar-dark {
+  background: linear-gradient(135deg, #7c2d12 0%, #b45309 60%, #d97706 100%) !important;
+  box-shadow: 0 2px 14px rgba(124, 45, 18, 0.25);
+}
+
+.navbar .navbar-brand {
+  color: #fff7ed !important;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.navbar .nav-link {
+  color: #ffedd5 !important;
+  font-weight: 500;
+  border-radius: 8px;
+  padding: 0.45rem 0.8rem !important;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.navbar .nav-link:hover {
+  background: rgba(255, 255, 255, 0.14);
+  color: #ffffff !important;
+}
+
+.navbar .nav-link.active {
+  background: rgba(255, 255, 255, 0.22);
+  color: #ffffff !important;
+  font-weight: 600;
+}
+
+.navbar .btn-success {
+  background: #ffffff;
+  border: none;
+  color: #b45309;
+  font-weight: 600;
+  border-radius: 10px;
+  padding: 0.45rem 1.1rem;
+}
+
+.navbar .btn-success:hover {
+  background: #fef7ed;
+}
+
+.navbar .btn-danger {
+  background: rgba(255, 255, 255, 0.16);
+  border: 1.5px solid rgba(255, 255, 255, 0.45);
+  color: #fff;
+  font-weight: 600;
+  border-radius: 10px;
+  padding: 0.45rem 1.1rem;
+}
+
+.navbar .btn-danger:hover {
+  background: rgba(255, 255, 255, 0.28);
+}
+
+/* ---------- Titres de pages ---------- */
+
+h2 {
+  position: relative;
+  padding-left: 0.9rem;
+}
+
+h2::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.2em;
+  bottom: 0.2em;
+  width: 4px;
+  border-radius: 4px;
+  background: linear-gradient(180deg, #d97706, #b45309);
+}
+
+/* ---------- Tableaux Bootstrap harmonisés ---------- */
+
+.table {
+  --bs-table-bg: transparent;
+  background: var(--papier);
+  border-radius: var(--rayon);
+  overflow: hidden;
+  box-shadow: var(--ombre);
+}
+
+.table thead th {
+  background: var(--sable);
+  color: #92400e;
+  font-weight: 600;
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 2px solid #f3e8dd;
+}
+
+.table tbody td {
+  border-bottom: 1px solid #f5f0e8;
+  color: #57534e;
+  vertical-align: middle;
+}
+
+.table tbody tr:hover {
+  background: #fdfaf5;
+}
+
+/* ---------- Boutons réutilisés partout ---------- */
+
+.btn {
+  border-radius: 10px;
+  font-weight: 600;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(146, 94, 36, 0.2);
+}
+
+.btn-success {
+  background: linear-gradient(135deg, #16a34a 0%, #22c55e 100%);
+  border: none;
+}
+
+.btn-info {
+  background: #dbeafe;
+  border-color: #bfdbfe;
+  color: #1d4ed8;
+}
+
+.btn-danger {
+  background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+  border: none;
+}
+
+/* ---------- Formulaires ---------- */
+
+.form-control, .form-select {
+  border-radius: 10px;
+  border: 1.5px solid var(--sable-bordure);
+}
+
+.form-control:focus, .form-select:focus {
+  border-color: var(--ambre);
+  box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.15);
+}
+
+.form-label {
+  font-weight: 600;
+  color: var(--encre);
+  font-size: 0.9rem;
+}
+
+/* ---------- Cartes génériques ---------- */
+
+.card {
+  border: none;
+  border-radius: var(--rayon);
+  box-shadow: var(--ombre);
+}
+
+/* ---------- Liens ---------- */
+
+a {
+  color: var(--ambre-fonce);
+}
+
+a:hover {
+  color: var(--ambre);
+}

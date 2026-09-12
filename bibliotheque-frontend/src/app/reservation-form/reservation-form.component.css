@@ -1,0 +1,110 @@
+.reservation-form-card {
+  border: none;
+  border-radius: 16px;
+  box-shadow: 0 6px 24px rgba(146, 94, 36, 0.12);
+  background: #ffffff;
+  overflow: hidden;
+  height: 100%;
+}
+
+.reservation-form-card .card-header {
+  background: linear-gradient(135deg, #b45309 0%, #d97706 100%);
+  color: #fff;
+  border: none;
+  padding: 1rem 1.25rem;
+}
+
+.reservation-form-card .card-header h3 {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.reservation-form-card .card-body {
+  padding: 1.25rem;
+}
+
+.form-label {
+  font-weight: 600;
+  color: #44403c;
+  font-size: 0.9rem;
+}
+
+.form-select {
+  border-radius: 10px;
+  border: 1.5px solid #e7dccd;
+  padding: 0.55rem 0.75rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-select:focus {
+  border-color: #d97706;
+  box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.15);
+  outline: none;
+}
+
+.hint {
+  font-size: 0.85rem;
+  color: #78716c;
+  background: #fef7ed;
+  border-left: 3px solid #d97706;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0 8px 8px 0;
+  margin-bottom: 1rem;
+}
+
+.text-muted {
+  color: #a8a29e !important;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #b45309 0%, #d97706 100%);
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  padding: 0.6rem 1rem;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+}
+
+.btn-primary:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(180, 83, 9, 0.35);
+}
+
+.btn-primary:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.alerte {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  margin-top: 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  animation: apparition 0.25s ease;
+}
+
+@keyframes apparition {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.alerte-erreur {
+  background: #fdf0ef;
+  color: #b3261e;
+  border: 1px solid #f5c6c2;
+}
+
+.alerte-succes {
+  background: #edf7ed;
+  color: #1e7e34;
+  border: 1px solid #c6e6c6;
+}
+
+.alerte-icone {
+  font-weight: bold;
+}

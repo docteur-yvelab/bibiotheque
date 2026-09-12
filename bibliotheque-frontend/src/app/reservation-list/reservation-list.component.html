@@ -1,0 +1,74 @@
+<div class="carte-liste">
+
+  <!-- ÉTAT : ERREUR (le backend est-il démarré ?) -->
+  <div *ngIf="erreurChargement" class="etat etat-erreur">
+    <div class="etat-icone">📡</div>
+    <h4>Impossible de charger les réservations</h4>
+    <p>{{ erreurChargement }}</p>
+    <button class="btn btn-reessayer" (click)="onReessayer()">Réessayer</button>
+  </div>
+
+  <!-- ÉTAT : CHARGEMENT (jamais un écran figé) -->
+  <div *ngIf="enChargement && !erreurChargement" class="etat etat-chargement">
+    <div class="spinner"></div>
+    <p>Chargement des réservations…</p>
+  </div>
+
+  <!-- ÉTAT : DONNÉES -->
+  <div *ngIf="!enChargement && !erreurChargement">
+
+    <div class="barre-liste">
+      <h3 class="titre-liste">Réservations</h3>
+      <div class="filtre">
+        <label for="filtreStatut" class="filtre-label">Statut :</label>
+        <select id="filtreStatut" class="form-select filtre-select"
+                [ngModel]="filtreStatut" (ngModelChange)="onFiltreChange($event)">
+          <option *ngFor="let s of statuts" [value]="s">{{ libelleStatut(s) }}</option>
+        </select>
+      </div>
+    </div>
+
+    <div *ngIf="messageAction" class="alerte alerte-erreur" role="alert">
+      <span class="alerte-icone">⚠</span>
+      <span>{{ messageAction }}</span>
+    </div>
+
+    <!-- ÉTAT : LISTE VIDE -->
+    <div *ngIf="reservationsFiltrees.length === 0" class="etat etat-vide">
+      <div class="etat-icone">📚</div>
+      <h4>Aucune réservation</h4>
+      <p>Aucune réservation ne correspond à ce filtre.</p>
+    </div>
+
+    <div class="table-responsive" *ngIf="reservationsFiltrees.length > 0">
+      <table class="table table-reservations">
+        <thead>
+          <tr>
+            <th>Livre</th>
+            <th>Adhérent</th>
+            <th>Statut</th>
+            <th>Réservée le</th>
+            <th>Expire le</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let reservation of reservationsFiltrees">
+            <td class="cellule-livre">{{ reservation.bookName || ('Livre #' + reservation.livreId) }}</td>
+            <td>{{ reservation.adherentName || ('Adhérent #' + reservation.adherentId) }}</td>
+            <td><span class="badge-statut" [class]="'badge-statut statut-' + reservation.statut.toLowerCase()">
+              {{ libelleStatut(reservation.statut) }}</span></td>
+            <td>{{ formaterDate(reservation.dateReservation) }}</td>
+            <td>{{ formaterDate(reservation.dateExpiration) }}</td>
+            <td class="cellule-actions">
+              <button *ngIf="estAnnulable(reservation)" class="btn btn-annuler"
+                      (click)="onAnnuler(reservation)">Annuler</button>
+              <button *ngIf="estBibliothecaire" class="btn btn-supprimer"
+                      (click)="onSupprimer(reservation)">Supprimer</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

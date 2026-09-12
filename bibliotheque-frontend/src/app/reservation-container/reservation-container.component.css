@@ -1,0 +1,33 @@
+.ecran-reservations {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1.25rem 3rem;
+}
+
+.en-tete-ecran {
+  margin-bottom: 1.5rem;
+}
+
+.en-tete-ecran h2 {
+  font-weight: 700;
+  color: #44403c;
+  margin: 0;
+}
+
+.sous-titre {
+  color: #a8a29e;
+  margin: 0.25rem 0 0;
+}
+
+.grille-reservations {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .grille-reservations {
+    grid-template-columns: 1fr;
+  }
+}

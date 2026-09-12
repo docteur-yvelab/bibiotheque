@@ -1,0 +1,49 @@
+<div class="card reservation-form-card">
+  <div class="card-header">
+    <h3> Nouvelle réservation </h3>
+  </div>
+  <div class="card-body">
+    <form #reservationForm="ngForm" (ngSubmit)="onSubmit()">
+
+      <div class="mb-3">
+        <label for="livre" class="form-label">Livre</label>
+        <select id="livre" name="livre" class="form-select" [(ngModel)]="livreId" required>
+          <option [ngValue]="null" disabled>— Choisir un livre —</option>
+          <option *ngFor="let livre of livres" [ngValue]="livre.bookId">
+            {{ livre.bookName }} ({{ livre.noOfCopies }} exemplaire{{ livre.noOfCopies > 1 ? 's' : '' }})
+          </option>
+        </select>
+      </div>
+
+      <div class="mb-3" *ngIf="estBibliothecaire">
+        <label for="adherent" class="form-label">Adhérent</label>
+        <select id="adherent" name="adherent" class="form-select" [(ngModel)]="adherentId" required>
+          <option [ngValue]="null" disabled>— Choisir un adhérent —</option>
+          <option *ngFor="let user of users" [ngValue]="user.userId">
+            {{ user.name }} ({{ user.username }})
+          </option>
+        </select>
+        <small class="text-muted">En tant que bibliothécaire, vous réservez au nom de l'adhérent choisi.</small>
+      </div>
+
+      <div *ngIf="!estBibliothecaire" class="hint">
+        La réservation sera enregistrée à votre nom.
+      </div>
+
+      <button type="submit" class="btn btn-primary w-100"
+              [disabled]="!formulaireValide || enCours">
+        {{ enCours ? 'Création en cours…' : 'Réserver' }}
+      </button>
+    </form>
+
+    <div *ngIf="messageErreur" class="alerte alerte-erreur" role="alert">
+      <span class="alerte-icone">⚠</span>
+      <span>{{ messageErreur }}</span>
+    </div>
+
+    <div *ngIf="messageSucces" class="alerte alerte-succes" role="status">
+      <span class="alerte-icone">✓</span>
+      <span>{{ messageSucces }}</span>
+    </div>
+  </div>
+</div>

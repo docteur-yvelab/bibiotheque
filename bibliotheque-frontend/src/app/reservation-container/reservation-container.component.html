@@ -1,0 +1,29 @@
+<div class="ecran-reservations">
+  <div class="en-tete-ecran">
+    <h2>Gestion des réservations</h2>
+    <p class="sous-titre">Réservez un livre indisponible et suivez son statut.</p>
+  </div>
+
+  <div class="grille-reservations">
+    <div class="colonne-formulaire">
+      <app-reservation-form
+        [estBibliothecaire]="estBibliothecaire"
+        (reservationCreee)="onReservationCreee()">
+      </app-reservation-form>
+    </div>
+
+    <div class="colonne-liste">
+      <app-reservation-list
+        [reservations]="reservations"
+        [enChargement]="enChargement"
+        [erreurChargement]="erreurChargement"
+        [filtreStatut]="filtreStatut"
+        [estBibliothecaire]="estBibliothecaire"
+        (filtreChange)="onFiltreChange($event)"
+        (reessayer)="onReessayer()"
+        (annulationDemandee)="onAnnulationDemandee($event)"
+        (suppressionDemandee)="onSuppressionDemandee($event)">
+      </app-reservation-list>
+    </div>
+  </div>
+</div>
