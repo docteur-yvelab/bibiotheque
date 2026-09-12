@@ -1,2 +1,137 @@
-/* You can add global styles to this file, and also import other style files */
-@import "~bootstrap/dist/css/bootstrap.min.css"
+/* ==========================================================================
+   Thème global — clair & chaleureux
+   Palette « bibliothèque » : crème, brun doux, ambre. Appliquée à tout le
+   site (header, cartes, tableaux, formulaires, boutons) pour une expérience
+   homogène.
+   ========================================================================== */
+@import "~bootstrap/dist/css/bootstrap.min.css";
+
+:root {
+  --biblio-fond: #faf6f0;
+  --biblio-surface: #ffffff;
+  --biblio-bordure: #eadfd2;
+  --biblio-primaire: #b45309;
+  --biblio-primaire-hover: #92400e;
+  --biblio-primaire-doux: #faf0e0;
+  --biblio-texte: #3f2d1d;
+  --biblio-texte-doux: #8a7461;
+  --biblio-accent: #d97706;
+}
+
+body {
+  background-color: var(--biblio-fond);
+  color: var(--biblio-texte);
+  font-family: 'Montserrat', 'Segoe UI', Arial, sans-serif;
+  min-height: 100vh;
+}
+
+/* ---------------------------- Titres ---------------------------- */
+
+h1, h2, h3, h4, h5 {
+  color: var(--biblio-texte);
+  font-weight: 700;
+}
+
+h2 {
+  position: relative;
+  padding-bottom: 0.4rem;
+  margin-bottom: 1.25rem;
+}
+
+/* ---------------------------- Cartes ---------------------------- */
+
+.card {
+  border: 1px solid var(--biblio-bordure);
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(92, 58, 16, 0.06);
+}
+
+.card-header {
+  background-color: var(--biblio-primaire-doux);
+  border-bottom: 1px solid var(--biblio-bordure);
+  font-weight: 600;
+  color: #5c3a10;
+}
+
+/* --------------------------- Tableaux ---------------------------- */
+
+.table {
+  color: var(--biblio-texte);
+}
+
+.table thead th {
+  background-color: var(--biblio-primaire-doux);
+  color: #5c3a10;
+  border-bottom: 2px solid var(--biblio-bordure);
+  font-weight: 600;
+}
+
+.table-striped > tbody > tr:nth-of-type(odd) {
+  --bs-table-accent-bg: #fdf9f3;
+}
+
+/* --------------------------- Boutons ----------------------------- */
+
+.btn-primary {
+  background-color: var(--biblio-primaire);
+  border-color: var(--biblio-primaire);
+}
+
+.btn-primary:hover, .btn-primary:focus, .btn-primary:active {
+  background-color: var(--biblio-primaire-hover) !important;
+  border-color: var(--biblio-primaire-hover) !important;
+}
+
+.btn-outline-primary {
+  color: var(--biblio-primaire);
+  border-color: var(--biblio-primaire);
+}
+
+.btn-outline-primary:hover {
+  background-color: var(--biblio-primaire);
+  border-color: var(--biblio-primaire);
+}
+
+/* ------------------------ Formulaires ---------------------------- */
+
+.form-select:focus, .form-control:focus {
+  border-color: var(--biblio-accent);
+  box-shadow: 0 0 0 0.2rem rgba(217, 119, 6, 0.15);
+}
+
+/* ---------------------- Barre de navigation ---------------------- */
+
+.biblio-navbar {
+  background: linear-gradient(90deg, #4a2c0f 0%, #6d3f14 60%, #8a5218 100%);
+  box-shadow: 0 2px 8px rgba(63, 45, 29, 0.25);
+}
+
+.biblio-navbar .navbar-brand {
+  color: #fdf3e3;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.biblio-navbar .nav-link {
+  color: #f3e2c8;
+}
+
+.biblio-navbar .nav-link:hover, .biblio-navbar .nav-link.active {
+  color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+}
+
+/* -------------------------- Divers ------------------------------- */
+
+.home {
+  text-align: center;
+  margin-top: 8vh;
+  font-size: 1.6rem;
+  color: var(--biblio-texte);
+  font-weight: 600;
+}
+
+.texte-doux {
+  color: var(--biblio-texte-doux);
+}

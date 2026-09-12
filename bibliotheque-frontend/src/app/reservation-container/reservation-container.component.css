@@ -1,0 +1,18 @@
+.page-titre {
+    font-weight: 700;
+    color: #5c3a10;
+}
+
+.page-sous-titre {
+    font-size: 0.95rem;
+}
+
+.filtre-statut {
+    min-width: 230px;
+}
+
+.liste-card {
+    border: 1px solid #eadfd2;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(92, 58, 16, 0.06);
+}

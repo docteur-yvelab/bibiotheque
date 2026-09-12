@@ -1,0 +1,66 @@
+<app-alert-banner *ngIf="messageAnnulation"
+                  type="warning"
+                  [dismissible]="true"
+                  (closed)="messageAnnulation = ''">
+  {{ messageAnnulation }}
+</app-alert-banner>
+
+<!-- ÉTAT 1 : chargement — jamais un écran figé -->
+<div *ngIf="etat === 'loading'" class="etat-chargement">
+  <div class="spinner-border text-secondary" role="status">
+    <span class="visually-hidden">Chargement...</span>
+  </div>
+  <p>Chargement des réservations...</p>
+</div>
+
+<!-- ÉTAT 2 : erreur — message compréhensible + moyen de réessayer -->
+<div *ngIf="etat === 'error'" class="etat-erreur">
+  <p>⚠️ Impossible de charger les réservations. Le serveur est peut-être injoignable.</p>
+  <button class="btn btn-primary" (click)="reessayer.emit()">Réessayer</button>
+</div>
+
+<!-- ÉTAT 3 : liste vide — message explicite, pas un tableau fantôme -->
+<div *ngIf="etat === 'empty'" class="etat-vide">
+  <p>Aucune réservation à afficher.</p>
+  <p class="text-muted">Créez-en une avec le formulaire ci-dessus.</p>
+</div>
+
+<!-- ÉTAT 4 : données -->
+<div *ngIf="etat === 'loaded'" class="table-responsive">
+  <table class="table table-hover align-middle mb-0">
+    <thead>
+      <tr>
+        <th scope="col">Livre</th>
+        <th scope="col">Adhérent</th>
+        <th scope="col">Statut</th>
+        <th scope="col">Réservé le</th>
+        <th scope="col">Expire le</th>
+        <th scope="col" class="text-end">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let reservation of reservations">
+        <td class="fw-bold">{{ reservation.bookName }}</td>
+        <td>{{ reservation.adherentName }}</td>
+        <td>
+          <span class="badge rounded-pill statut-badge" [ngClass]="'statut-' + reservation.statut">
+            {{ libelleStatut(reservation.statut) }}
+          </span>
+        </td>
+        <td>{{ reservation.dateReservation | date:'dd/MM/yyyy à HH:mm' }}</td>
+        <td>{{ reservation.dateExpiration | date:'dd/MM/yyyy à HH:mm' }}</td>
+        <td class="text-end">
+          <button *ngIf="peutEtreAnnulee(reservation)"
+                  class="btn btn-sm btn-outline-danger"
+                  [disabled]="annulationEnCoursId === reservation.reservationId"
+                  (click)="onAnnuler(reservation)">
+            <span *ngIf="annulationEnCoursId === reservation.reservationId"
+                  class="spinner-border spinner-border-sm me-1" role="status"></span>
+            Annuler
+          </button>
+          <span *ngIf="!peutEtreAnnulee(reservation)" class="text-muted small">—</span>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

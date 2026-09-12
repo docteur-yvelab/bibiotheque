@@ -1,0 +1,13 @@
+.reservation-form-card {
+    border: 1px solid #eadfd2;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(92, 58, 16, 0.06);
+    margin-bottom: 1.5rem;
+}
+
+.reservation-form-card .card-header {
+    background-color: #faf5ee;
+    border-bottom: 1px solid #eadfd2;
+    font-weight: 600;
+    color: #5c3a10;
+}

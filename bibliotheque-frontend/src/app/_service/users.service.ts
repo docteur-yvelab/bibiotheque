@@ -36,9 +36,10 @@ export class UsersService {
           if (userRoles[i].roleName === allowedRoles[j]) {
             isMatch = true;
             return isMatch;
-          } else {
-            return isMatch;
           }
+          // Ancien bug : un « else return » ici quittait la boucle dès le
+          // premier rôle non correspondant, rendant tout rôle multi-critères
+          // (ex. ['Admin','User']) invisible pour les simples utilisateurs.
         }
       }
     }

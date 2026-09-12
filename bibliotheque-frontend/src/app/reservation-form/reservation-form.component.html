@@ -1,0 +1,52 @@
+<div class="card reservation-form-card">
+  <div class="card-header">Nouvelle réservation</div>
+  <div class="card-body">
+    <app-alert-banner *ngIf="messageSucces"
+                      type="success"
+                      [dismissible]="true"
+                      (closed)="messageSucces = ''">
+      {{ messageSucces }}
+    </app-alert-banner>
+
+    <app-alert-banner *ngIf="messageErreur"
+                      type="danger"
+                      [dismissible]="true"
+                      (closed)="messageErreur = ''">
+      {{ messageErreur }}
+    </app-alert-banner>
+
+    <form (ngSubmit)="onSoumettre()">
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label for="livre" class="form-label">Livre</label>
+          <select id="livre" class="form-select" [(ngModel)]="livreId" name="livreId">
+            <option [ngValue]="null" disabled>— Choisir un livre —</option>
+            <option *ngFor="let livre of livres" [ngValue]="livre.bookId">
+              {{ livre.bookName }} ({{ livre.noOfCopies }} copie(s))
+            </option>
+          </select>
+          <div class="form-text">Seuls les livres indisponibles peuvent être réservés (RG-01).</div>
+        </div>
+
+        <div class="col-md-6">
+          <label for="adherent" class="form-label">Adhérent</label>
+          <select id="adherent" class="form-select" [(ngModel)]="adherentId" name="adherentId">
+            <option [ngValue]="null" disabled>— Choisir un adhérent —</option>
+            <option *ngFor="let adherent of adherents" [ngValue]="adherent.userId">
+              {{ adherent.name }}
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <div class="d-flex justify-content-end mt-3">
+        <button type="submit"
+                class="btn btn-primary"
+                [disabled]="formulaireIncomplet || enCours">
+          <span *ngIf="enCours" class="spinner-border spinner-border-sm me-1" role="status"></span>
+          {{ enCours ? 'Création en cours...' : 'Réserver' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,35 @@
+.statut-badge {
+    font-size: 0.82rem;
+    padding: 0.45em 0.9em;
+}
+
+/* Palette de statuts — déclinée à partir de la teinte principale du thème */
+.statut-EN_ATTENTE {
+    background-color: #fff3cd;
+    color: #7a5b00;
+    border: 1px solid #f1dc9b;
+}
+
+.statut-DISPONIBLE {
+    background-color: #dbeafe;
+    color: #1e40af;
+    border: 1px solid #b6ccf5;
+}
+
+.statut-ANNULEE {
+    background-color: #fde8e8;
+    color: #a13030;
+    border: 1px solid #f5c2c2;
+}
+
+.statut-EXPIREE {
+    background-color: #edebf5;
+    color: #4d4370;
+    border: 1px solid #d5cef0;
+}
+
+.statut-HONOREE {
+    background-color: #d1e7dd;
+    color: #0f5132;
+    border: 1px solid #a8cfbc;
+}

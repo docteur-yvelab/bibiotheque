@@ -1,7 +1,6 @@
-<header>
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<header>    <nav class="navbar navbar-expand-lg navbar-dark biblio-navbar">
     <div class="container-fluid">
-      <a class="navbar-brand" style="color: rgb(241, 223, 223);" href="#">Library Management System</a>
+      <a class="navbar-brand" href="#">📚 Gestion de Bibliothèque</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -32,6 +31,10 @@
             <a routerLink="/return-book" routerLinkActive="active" class="nav-link" *ngIf="userService.roleMatch(['User'])">Return Books</a>
           </li>
 
+          <li class="nav-item">
+            <a routerLink="/reservations" routerLinkActive="active" class="nav-link" *ngIf="userService.roleMatch(['Admin','User'])">Reservations</a>
+          </li>
+
           <li class="nav-item right-text" *ngIf="isLoggedIn()">
             <div class="nav-link disabled text-right">
               <strong>
@@ -41,8 +44,8 @@
           </li>
 
         </ul>
-        <button *ngIf="!isLoggedIn()" type="button" class="btn btn-success" routerLink="/login">Login</button>
-        <button *ngIf="isLoggedIn()" type="button" class="btn btn-danger" (click)="logout()">Logout</button>
+        <button *ngIf="!isLoggedIn()" type="button" class="btn btn-warning fw-semibold" routerLink="/login">Connexion</button>
+        <button *ngIf="isLoggedIn()" type="button" class="btn btn-outline-light" (click)="logout()">Déconnexion</button>
       </div>
     </div>
   </nav>
