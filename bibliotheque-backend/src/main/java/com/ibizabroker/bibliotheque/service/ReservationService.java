@@ -116,7 +116,7 @@ public class ReservationService {
         reservation.setDateExpiration(cal.getTime());
 
         Reservation saved = reservationRepository.save(reservation);
-        return new ReservationResponse(saved);
+        return toResponse(saved);
     }
 
     /**
@@ -150,9 +150,27 @@ public class ReservationService {
     private List<ReservationResponse> toResponses(List<Reservation> reservations) {
         List<ReservationResponse> responses = new ArrayList<>();
         for (Reservation r : reservations) {
-            responses.add(new ReservationResponse(r));
+            responses.add(toResponse(r));
         }
         return responses;
+    }
+
+    private ReservationResponse toResponse(Reservation reservation) {
+        ReservationResponse response = new ReservationResponse(reservation);
+        enrichirAvecNoms(response);
+        return response;
+    }
+
+    /**
+     * Enrichit le DTO avec le titre du livre et le nom de l'adhérent,
+     * pour que le front affiche des noms lisibles sans appels HTTP
+     * supplémentaires (choix documenté : jointure côté backend).
+     */
+    private void enrichirAvecNoms(ReservationResponse response) {
+        booksRepository.findById(response.getLivreId())
+                .ifPresent(livre -> response.setBookName(livre.getBookName()));
+        usersRepository.findById(response.getAdherentId())
+                .ifPresent(adherent -> response.setAdherentName(adherent.getName()));
     }
 
     /**
@@ -165,7 +183,7 @@ public class ReservationService {
                 .orElseThrow(() -> new NotFoundException("Réservation avec l'id " + id + " non trouvée."));
 
         verifierAppartenance(reservation);
-        return new ReservationResponse(reservation);
+        return toResponse(reservation);
     }
 
     /**
@@ -190,7 +208,7 @@ public class ReservationService {
 
         reservation.setStatut(ReservationStatus.ANNULEE);
         Reservation updated = reservationRepository.save(reservation);
-        return new ReservationResponse(updated);
+        return toResponse(updated);
     }
 
     /**

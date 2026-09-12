@@ -9,6 +9,10 @@ public class ReservationResponse {
     private java.util.Date dateExpiration;
     private ReservationStatus statut;
 
+    // Champs enrichis (noms lisibles, évitent N appels HTTP côté front)
+    private String bookName;
+    private String adherentName;
+
     public ReservationResponse(Reservation reservation) {
         this.reservationId = reservation.getReservationId();
         this.livreId = reservation.getLivreId();
@@ -40,5 +44,21 @@ public class ReservationResponse {
 
     public ReservationStatus getStatut() {
         return statut;
+    }
+
+    public String getBookName() {
+        return bookName;
+    }
+
+    public void setBookName(String bookName) {
+        this.bookName = bookName;
+    }
+
+    public String getAdherentName() {
+        return adherentName;
+    }
+
+    public void setAdherentName(String adherentName) {
+        this.adherentName = adherentName;
     }
 }

@@ -11,6 +11,7 @@ import com.ibizabroker.bibliotheque.entity.Role;
 import com.ibizabroker.bibliotheque.entity.Users;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -48,9 +50,22 @@ public class TestDataInitializer implements CommandLineRunner {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
     @Override
     @Transactional
     public void run(String... args) {
+        // La base contient des lignes créées par l'ancienne app (Hibernate 5,
+        // séquence globale hibernate_sequence). Hibernate 6 crée des séquences
+        // <table>_seq qui repartent de 1 -> collisions de clés primaires au
+        // premier INSERT. On réaligne donc les séquences sur le MAX(id) réel.
+        alignerSequence("books", "book_id");
+        alignerSequence("users", "user_id");
+        alignerSequence("role", "role_id");
+        alignerSequence("borrow", "borrow_id");
+        alignerSequence("reservation", "reservation_id");
+
         Role adherentRole = findOrCreateRole("ADHERENT");
         Role bibliothecaireRole = findOrCreateRole("BIBLIOTHECAIRE");
         findOrCreateRole("Admin");
@@ -93,6 +108,26 @@ public class TestDataInitializer implements CommandLineRunner {
             cal.add(Calendar.DATE, 7);
             reservation.setDateExpiration(cal.getTime());
             reservationRepository.save(reservation);
+        }
+    }
+
+    /**
+     * Repositionne la séquence <table>_seq (si elle existe) juste après le
+     * MAX(id) actuel de la table. Idempotent et sans effet sur une base neuve.
+     */
+    private void alignerSequence(String table, String colonne) {
+        try {
+            List<String> sequences = jdbcTemplate.queryForList(
+                    "SELECT sequence_name FROM information_schema.sequences WHERE sequence_name ILIKE ?",
+                    String.class, table + "_seq");
+            if (sequences.isEmpty()) {
+                return;
+            }
+            String sequence = sequences.get(0);
+            jdbcTemplate.execute("SELECT setval('" + sequence + "', "
+                    + "(SELECT COALESCE(MAX(" + colonne + "), 0) + 1 FROM " + table + "), false)");
+        } catch (Exception ignored) {
+            // table ou séquence absente : rien à aligner
         }
     }
 
