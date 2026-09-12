@@ -10,7 +10,9 @@ import com.ibizabroker.bibliotheque.entity.ReservationResponse;
 import com.ibizabroker.bibliotheque.entity.ReservationStatus;
 import com.ibizabroker.bibliotheque.entity.Users;
 import com.ibizabroker.bibliotheque.exceptions.ConflictException;
+import com.ibizabroker.bibliotheque.exceptions.ForbiddenException;
 import com.ibizabroker.bibliotheque.exceptions.NotFoundException;
+import com.ibizabroker.bibliotheque.util.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -53,6 +55,9 @@ public class ReservationService {
     @Autowired
     private UsersRepository usersRepository;
 
+    @Autowired
+    private SecurityUtils securityUtils;
+
     /**
      * Crée une réservation après application de RG-01, RG-02, RG-03 et RG-04.
      *
@@ -65,14 +70,23 @@ public class ReservationService {
         if (request.getLivreId() == null) {
             throw new IllegalArgumentException("Le champ 'livreId' est obligatoire.");
         }
-        if (request.getAdherentId() == null) {
-            throw new IllegalArgumentException("Le champ 'adherentId' est obligatoire.");
+        // RS-04 : l'identité d'un ADHERENT vient du token, jamais du body.
+        // Un BIBLIOTHECAIRE, lui, crée légitimement pour un tiers : il peut
+        // fournir n'importe quel adherentId.
+        Integer adherentIdEffective;
+        if (securityUtils.aLeRole("BIBLIOTHECAIRE")) {
+            if (request.getAdherentId() == null) {
+                throw new IllegalArgumentException("Le champ 'adherentId' est obligatoire.");
+            }
+            adherentIdEffective = request.getAdherentId();
+        } else {
+            adherentIdEffective = securityUtils.getUserIdCourant();
         }
 
         Books livre = booksRepository.findById(request.getLivreId())
                 .orElseThrow(() -> new NotFoundException("Livre introuvable avec l'identifiant " + request.getLivreId() + "."));
-        Users adherent = usersRepository.findById(request.getAdherentId())
-                .orElseThrow(() -> new NotFoundException("Adhérent introuvable avec l'identifiant " + request.getAdherentId() + "."));
+        Users adherent = usersRepository.findById(adherentIdEffective)
+                .orElseThrow(() -> new NotFoundException("Adhérent introuvable avec l'identifiant " + adherentIdEffective + "."));
 
         // RG-01 : on ne peut réserver qu'un livre indisponible.
         // Une copie en rayon signifie que l'adhérent peut emprunter directement :
@@ -91,14 +105,14 @@ public class ReservationService {
                     .findByLivreIdAndStatut(request.getLivreId(), ReservationStatus.DISPONIBLE);
         }
         for (Reservation existante : dejaSurCeLivre) {
-            if (existante.getAdherentId().equals(request.getAdherentId())) {
+            if (existante.getAdherentId().equals(adherentIdEffective)) {
                 throw new ConflictException("RG-02 : vous avez déjà une réservation active sur le livre \""
                         + livre.getBookName() + "\". Un seul exemplaire peut être réservé à la fois.");
             }
         }
 
         // RG-03 : maximum 3 réservations actives simultanées.
-        long actives = countReservationsActives(request.getAdherentId());
+        long actives = countReservationsActives(adherentIdEffective);
         if (actives >= MAX_RESERVATIONS_ACTIVES) {
             throw new ConflictException("RG-03 : quota de " + MAX_RESERVATIONS_ACTIVES
                     + " réservations actives atteint. Annulez-en une avant d'en créer une nouvelle.");
@@ -108,7 +122,7 @@ public class ReservationService {
         Date maintenant = new Date();
         Reservation reservation = new Reservation();
         reservation.setLivreId(request.getLivreId());
-        reservation.setAdherentId(request.getAdherentId());
+        reservation.setAdherentId(adherentIdEffective);
         reservation.setDateReservation(maintenant);
         reservation.setDateExpiration(ajouterJours(maintenant, DUREE_RESERVATION_JOURS));
         reservation.setStatut(ReservationStatus.EN_ATTENTE);
@@ -119,27 +133,34 @@ public class ReservationService {
 
     /**
      * Liste toutes les réservations, avec filtres optionnels.
-     * Un filtre sur les deux paramètres combine les résultats des deux critères.
+     * RS-05 : un ADHERENT ne voit jamais que les siennes, même s'il tente
+     * de passer l'adherentId d'un autre en query param. Un BIBLIOTHECAIRE
+     * utilise librement les filtres.
      */
     public List<ReservationResponse> listerReservations(ReservationStatus statut, Integer adherentId) {
+        Integer adherentIdEffective = adherentId;
+        if (!securityUtils.aLeRole("BIBLIOTHECAIRE")) {
+            adherentIdEffective = securityUtils.getUserIdCourant();
+        }
         List<Reservation> reservations;
-        if (statut != null && adherentId != null) {
+        if (statut != null && adherentIdEffective != null) {
             reservations = new ArrayList<>();
-            reservations.addAll(reservationRepository.findByAdherentIdAndStatut(adherentId, statut));
+            reservations.addAll(reservationRepository.findByAdherentIdAndStatut(adherentIdEffective, statut));
         } else if (statut != null) {
             reservations = reservationRepository.findByStatut(statut);
-        } else if (adherentId != null) {
-            reservations = reservationRepository.findByAdherentId(adherentId);
+        } else if (adherentIdEffective != null) {
+            reservations = reservationRepository.findByAdherentId(adherentIdEffective);
         } else {
             reservations = reservationRepository.findAll();
         }
         return versResponses(reservations);
     }
 
-    /** Consultation d'une réservation. @throws NotFoundException 404 si inconnue. */
+    /** Consultation d'une réservation. RS-03 : un ADHERENT ne voit que les siennes. */
     public ReservationResponse obtenirReservation(Integer id) {
         Reservation reservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Réservation introuvable avec l'identifiant " + id + "."));
+        verifierAppartenance(reservation);
         return versResponse(reservation, null, null);
     }
 
@@ -152,6 +173,9 @@ public class ReservationService {
     public ReservationResponse annulerReservation(Integer id) {
         Reservation reservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Réservation introuvable avec l'identifiant " + id + "."));
+
+        // RS-03 : vérification de propriété avant toute mutation.
+        verifierAppartenance(reservation);
 
         // RG-05 / RG-06 : seules EN_ATTENTE et DISPONIBLE sont annulables.
         // Toute autre valeur (ANNULEE, EXPIREE, HONOREE) est un état final
@@ -178,6 +202,19 @@ public class ReservationService {
     // ------------------------------------------------------------------
     // Helpers privés
     // ------------------------------------------------------------------
+
+    /**
+     * RS-03 : un ADHERENT ne peut agir que sur ses propres réservations.
+     * Un BIBLIOTHECAIRE a accès à tout.
+     */
+    private void verifierAppartenance(Reservation reservation) {
+        if (securityUtils.aLeRole("BIBLIOTHECAIRE")) {
+            return;
+        }
+        if (!reservation.getAdherentId().equals(securityUtils.getUserIdCourant())) {
+            throw new ForbiddenException("Cette réservation ne vous appartient pas.");
+        }
+    }
 
     /** Compte les réservations actives (EN_ATTENTE ou DISPONIBLE) d'un adhérent. */
     private long countReservationsActives(Integer adherentId) {

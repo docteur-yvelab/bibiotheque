@@ -71,9 +71,12 @@ public class JwtService implements UserDetailsService {
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userName, userPassword));
         } catch (DisabledException e) {
-            throw new Exception("USER_DISABLED", e);
+            // On relance le même type d'exception (et non un Exception générique) :
+            // GlobalExceptionHandler en déduit le bon code HTTP (401 pour des
+            // identifiants invalides, pas un 500 sémantiquement faux).
+            throw new DisabledException("USER_DISABLED", e);
         } catch (BadCredentialsException e) {
-            throw new Exception("INVALID_CREDENTIALS", e);
+            throw new BadCredentialsException("INVALID_CREDENTIALS", e);
         }
     }
 }

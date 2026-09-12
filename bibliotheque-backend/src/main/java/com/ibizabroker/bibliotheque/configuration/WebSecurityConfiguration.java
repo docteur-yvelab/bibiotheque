@@ -61,9 +61,10 @@ public class WebSecurityConfiguration {
                         .requestMatchers(HttpMethod.GET, "/admin/books").permitAll()
                         .requestMatchers(HttpMethod.GET, "/admin/books/*").permitAll()
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
-                        // Séance 2 : endpoints de réservation publics tant que la
-                        // séance 4 (sécurisation) n'est pas appliquée sur cette branche.
-                        .requestMatchers("/api/reservations/**").permitAll()
+                        // Séance 4 : /api/reservations/** n'est plus en permitAll —
+                        // il tombe sous anyRequest().authenticated() (RS-01). La logique
+                        // fine de rôle est portée par @PreAuthorize et les vérifications
+                        // de propriété du service (RS-02 à RS-05).
                         .requestMatchers(HttpHeaders.ALLOW).permitAll()
                         .anyRequest().authenticated())
                 .exceptionHandling(handling -> handling

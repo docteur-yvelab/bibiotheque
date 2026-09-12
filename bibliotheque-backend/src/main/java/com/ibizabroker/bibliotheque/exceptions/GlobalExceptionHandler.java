@@ -2,6 +2,8 @@ package com.ibizabroker.bibliotheque.exceptions;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -40,6 +42,34 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Map<String, Object>> handleBadRequest(IllegalArgumentException exception) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body(exception.getMessage()));
+    }
+
+    /**
+     * 401 — échec d'authentification (mauvais identifiants sur /authenticate).
+     * Sans ce handler dédié, BadCredentialsException tombait dans le handler
+     * générique et produisait un 500 — sémantiquement faux.
+     */
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<Map<String, Object>> handleBadCredentials(BadCredentialsException exception) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(body("Identifiants invalides."));
+    }
+
+    /** 403 — identité connue mais droits insuffisants (jamais confondre avec 401). */
+    @ExceptionHandler(ForbiddenException.class)
+    public ResponseEntity<Map<String, Object>> handleForbidden(ForbiddenException exception) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(body(exception.getMessage()));
+    }
+
+    /**
+     * 403 — AccessDeniedException de Spring Security (@PreAuthorize).
+     * Sans ce relais, le handler générique Exception.class l'absorbait et
+     * renvoyait un 500 au lieu du 403 attendu (bug détecté par les tests).
+     */
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<Map<String, Object>> handleAccessDenied(AccessDeniedException exception) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(body("Accès refusé : droits insuffisants pour cette opération."));
     }
 
     /** 500 — tout le reste, sans détail technique exposé au client. */
