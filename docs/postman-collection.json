@@ -1,0 +1,86 @@
+{
+  "info": {
+    "name": "Bibliotheque - Séance 1",
+    "description": "Collection minimale : authentification, livres, emprunt, réservation. Importer dans Postman, puis renseigner la variable baseUrl et le token via /authenticate.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080" },
+    { "key": "jwtToken", "value": "COLLER_ICI_LE_TOKEN_DE_AUTHENTICATE" }
+  ],
+  "item": [
+    {
+      "name": "1. Authenticate (obtenir le JWT)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const body = pm.response.json();",
+              "if (body.jwtToken) { pm.collectionVariables.set('jwtToken', body.jwtToken); }"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"admin\"\n}"
+        },
+        "url": "{{baseUrl}}/authenticate"
+      }
+    },
+    {
+      "name": "2. Livres - Liste (public)",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/admin/books"
+      }
+    },
+    {
+      "name": "3. Livre - Création (Admin)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{jwtToken}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"bookName\": \"Clean Code\",\n  \"bookAuthor\": \"Robert C. Martin\",\n  \"bookGenre\": \"Informatique\",\n  \"noOfCopies\": 2\n}"
+        },
+        "url": "{{baseUrl}}/admin/books"
+      }
+    },
+    {
+      "name": "4. Emprunt - Création (public)",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"bookId\": 1,\n  \"userId\": 1\n}"
+        },
+        "url": "{{baseUrl}}/borrow"
+      }
+    },
+    {
+      "name": "5. Réservation - Création (Séance 2+)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{jwtToken}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"livreId\": 1,\n  \"adherentId\": 2\n}"
+        },
+        "url": "{{baseUrl}}/api/reservations"
+      }
+    }
+  ]
+}
