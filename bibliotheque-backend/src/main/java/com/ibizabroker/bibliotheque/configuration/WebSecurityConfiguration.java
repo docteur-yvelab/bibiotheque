@@ -14,9 +14,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /**
@@ -65,9 +63,9 @@ public class WebSecurityConfiguration {
                         .anyRequest().authenticated())
                 .exceptionHandling(handling -> handling
                         // 401 : je ne sais pas qui vous êtes (token absent/invalide/expiré)
-                        .authenticationEntryPoint((AuthenticationEntryPoint) jwtAuthenticationEntryPoint)
+                        .authenticationEntryPoint(jwtAuthenticationEntryPoint)
                         // 403 : je sais qui vous êtes, mais vous n'avez pas le droit
-                        .accessDeniedHandler((AccessDeniedHandler) jsonAccessDeniedHandler))
+                        .accessDeniedHandler(jsonAccessDeniedHandler))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         httpSecurity.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
