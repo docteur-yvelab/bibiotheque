@@ -56,6 +56,8 @@ public class WebSecurityConfiguration {
         httpSecurity.csrf().disable()
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/authenticate", "/borrow/**").permitAll()
+                        // Swagger UI accessible pour tester l'API en soutenance
+                        .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/admin/books").permitAll()
                         .requestMatchers(HttpMethod.GET, "/admin/books/*").permitAll()
                         .requestMatchers(HttpHeaders.ALLOW).permitAll()
